@@ -1,0 +1,10 @@
+[font]
+size = 16
+normal = { family = "M+1Code Nerd Font", style = "Regular" }
+
+[window]
+padding = { x = 10, y = 5 }
+decorations = "None"
+
+[colors.primary]
+background = "#232136"

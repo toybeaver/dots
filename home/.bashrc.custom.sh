@@ -16,10 +16,10 @@ alias vim=nvim
 alias v=vim
 
 # Shell ===============================================================================================================
-CRESET="\e[0m";
-CGREEN="\e[1;32m";
-CYELLOW="\e[1;33m";
-CSGREEN="\e[0;32m";
+CRESET="\[\033[0m\]";
+CGREEN="\[\033[1;32m\]";
+CYELLOW="\[\033[1;33m\]";
+CSGREEN="\[\033[0;32m\]";
 
 function _ps1_get_git_branch() {
   BRANCH=$(git branch --show-current 2>/dev/null)
@@ -32,4 +32,4 @@ function _ps1_git_has_changes() {
 }
 
 PROMPT_COMMAND='PS1_GIT=$(_ps1_get_git_branch);PS1_GIT_STATUS=$(_ps1_git_has_changes)';
-PS1=" $CGREEN\W$CRESET$CYELLOW\${PS1_GIT}\${PS1_GIT_STATUS}$CSGREEN \\$ $CRESET";
+PS1="$CGREEN\W$CRESET$CYELLOW\${PS1_GIT}\${PS1_GIT_STATUS}$CSGREEN \\$ $CRESET";

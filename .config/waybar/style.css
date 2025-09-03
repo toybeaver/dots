@@ -1,0 +1,70 @@
+* {
+    font-family: "M+1Code Nerd Font", FontAwesome, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    text-shadow: none;
+}
+
+window#waybar {
+    background-color: rgba(43, 44, 52, 0.8);
+    color: #ffffff;
+    transition: background-color 0.5s;
+}
+
+window#waybar.hidden {
+    opacity: 0.2;
+}
+
+#window {
+    font-family: 'Sarasa Gothic SC', sans-serif;
+}
+
+#clock {
+    min-width: 140px;
+    background: #3b3f51;
+    color: #ffffff;
+    padding: 0px 10px;
+    border-radius: 4px;
+}
+
+#cpu,
+#memory,
+#network,
+#pulseaudio {
+    padding: 5px 8px;
+    background-color: #3b3f51;
+    color: #ffffff;
+}
+
+#battery.charging{
+    background-color: #b5b4e2;
+}
+
+#battery.critical:not(.charging) {
+    background-color: #b54f4f;
+    animation: blink 0.5s linear infinite alternate;
+}
+
+@keyframes blink {
+    to {
+        background-color: #ffffff;
+        color: #3b3f51;
+    }
+}
+
+#network.disconnected {
+    background-color: #b54f4f;
+}
+
+#pulseaudio.muted {
+    background-color: #3b3f51;
+    color: #b5b4e2;
+}
+
+label:focus {
+    background-color: #000000;
+}
