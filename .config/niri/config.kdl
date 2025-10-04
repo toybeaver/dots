@@ -2,18 +2,25 @@ spawn-at-startup "waybar"
 spawn-at-startup "mako"
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "pipewire"
-spawn-at-startup "swaybg" "-i" "/home/jj/Pictures/wallpaper.jpg"
+spawn-at-startup "swaybg" "-i" "/home/jj/Pictures/wallpaper.png"
 
 environment {
-  DISPLAY ":0.0"
+    DISPLAY ":0.0"
 }
 
 input {
     keyboard {
-        xkb {}
-        numlock
+        xkb {
+            layout "us"
+            variant "intl"
+        }
     }
     mouse {}
+}
+
+cursor {
+    xcursor-theme "Nordzy-cursors"
+    xcursor-size 32
 }
 
 output "DP-3" {
@@ -22,6 +29,7 @@ output "DP-3" {
 }
 
 layout {
+    background-color "transparent"
     gaps 10
     center-focused-column "never"
     preset-column-widths {
@@ -68,6 +76,11 @@ window-rule {
 window-rule {
     geometry-corner-radius 12
     clip-to-geometry true
+}
+
+layer-rule {
+    match namespace="^wallpaper$"
+    place-within-backdrop true
 }
 
 gestures {

@@ -32,4 +32,4 @@ function _ps1_git_has_changes() {
 }
 
 PROMPT_COMMAND='PS1_GIT=$(_ps1_get_git_branch);PS1_GIT_STATUS=$(_ps1_git_has_changes)';
-PS1="$CGREEN\W$CRESET$CYELLOW\${PS1_GIT}\${PS1_GIT_STATUS}$CSGREEN \\$ $CRESET";
+PS1="\n$CGREEN\W$CRESET$CYELLOW\${PS1_GIT}\${PS1_GIT_STATUS}$CSGREEN \\$ $CRESET";
