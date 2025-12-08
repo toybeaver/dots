@@ -1,7 +1,7 @@
 spawn-at-startup "waybar"
+spawn-at-startup "pipewire"
 spawn-at-startup "mako"
 spawn-at-startup "xwayland-satellite"
-spawn-at-startup "pipewire"
 spawn-at-startup "swaybg" "-i" "/home/jj/Pictures/wallpaper.png"
 
 environment {
@@ -98,7 +98,7 @@ binds {
 
     Mod+Return hotkey-overlay-title="Open a Terminal: alacritty" { spawn "alacritty"; }
     Mod+D hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
-    Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }
+    Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock" "-i" "/home/jj/Pictures/wallpaper.png"; }
 
     Mod+O repeat=false { toggle-overview; }
 
@@ -215,9 +215,9 @@ binds {
     Mod+V       { toggle-window-floating; }
     Mod+Shift+V { switch-focus-between-floating-and-tiling; }
 
-    Print { screenshot; }
-    Ctrl+Print { screenshot-screen; }
-    Alt+Print { screenshot-window; }
+    Mod+S { screenshot; }
+    Ctrl+Mod+S { screenshot-screen; }
+    Alt+Mod+S { screenshot-window; }
 
     // It's a good idea to bind an escape hatch to toggle the inhibitor,
     // so a buggy application can't hold your session hostage.
@@ -229,4 +229,8 @@ binds {
     Mod+Shift+E { quit; }
 
     Mod+Shift+P { power-off-monitors; }
+
+    XF86AudioRaiseVolume { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.01+"; }
+    XF86AudioLowerVolume { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.01-"; }
+    XF86AudioMute { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
 }

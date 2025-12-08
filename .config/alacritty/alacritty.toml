@@ -1,11 +1,11 @@
 [font]
-size = 16
-normal = { family = "M+1Code Nerd Font", style = "Regular" }
-offset.y = 6
-glyph_offset.y = 3
+size = 12
+normal = { family = "JetBrainsMono Nerd Font", style = "Regular" }
+offset.y = 4
+glyph_offset.y = 2
 
 [window]
-padding = { x = 10, y = 5 }
+padding = { x = 2, y = 0 }
 decorations = "None"
 
 [colors.primary]
