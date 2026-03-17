@@ -2,12 +2,13 @@
 [[ -d "$HOME/Pictures" ]]   || mkdir -p $HOME/Pictures
 [[ -d "$HOME/Videos" ]]     || mkdir -p $HOME/Videos
 [[ -d "$HOME/Downloads" ]]  || mkdir -p $HOME/Downloads
-[[ -d "$HOME/Docs" ]]       || mkdir -p $HOME/Docs
+[[ -d "$HOME/Documents" ]]       || mkdir -p $HOME/Docs
 [[ -d "$HOME/.local/bin" ]] || mkdir -p $HOME/.local/bin
 [[ -d "$HOME/.local/opt" ]] || mkdir -p $HOME/.local/opt
 
 # Environemnt =========================================================================================================
 export PATH=$PATH:/home/jj/.local/bin
+export EDITOR=nvim
 
 # Alias ===============================================================================================================
 alias ls='ls -h --color=auto'

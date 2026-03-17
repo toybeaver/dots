@@ -2,7 +2,12 @@ spawn-at-startup "waybar"
 spawn-at-startup "pipewire"
 spawn-at-startup "mako"
 spawn-at-startup "xwayland-satellite"
-spawn-at-startup "swaybg" "-i" "/home/jj/Pictures/wallpaper.png"
+spawn-at-startup "swaybg" "-i" "/home/jj/Pictures/wallpaper.jpg"
+
+spawn-at-startup "flatpak" "run" "org.telegram.desktop"
+spawn-at-startup "flatpak" "run" "com.slack.Slack"
+spawn-at-startup "flatpak" "run" "dev.vencord.Vesktop"
+spawn-at-startup "steam"
 
 environment {
     DISPLAY ":0.0"
@@ -24,7 +29,7 @@ cursor {
 }
 
 output "DP-3" {
-    mode "1920x1080@165.003"
+    mode "3440x1440@180.000"
     transform "normal"
 }
 
@@ -70,6 +75,11 @@ animations {}
 
 window-rule {
     match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+    open-floating true
+}
+
+window-rule {
+    match app-id="com.zim.gui"
     open-floating true
 }
 

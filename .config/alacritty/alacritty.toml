@@ -11,5 +11,9 @@ glyph_offset.y = 0
 
 [window]
 padding = { x = 2, y = 0 }
-decorations = "None"
 
+
+[[keyboard.bindings]]
+key = "Return"
+mods = "Shift"
+chars = "\x1b\r"
