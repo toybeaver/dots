@@ -5,7 +5,7 @@ import QtQuick
 
 TopBarRectangle {
   id: root
-  implicitWidth: 90
+  implicitWidth: 70
 
   Connections {
     target: BatteryWatcher
@@ -23,6 +23,6 @@ TopBarRectangle {
     color: "white"
     font.pointSize: 12
 
-    text: "%1% [%2]".arg(BatteryWatcher.percentage).arg(BatteryWatcher.state)
+    text: "%1%".arg(BatteryWatcher.percentage)
   }
 }
