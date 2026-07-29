@@ -26,11 +26,13 @@ format=<span font_family="Oswald" size="large" weight="600">%s</span>\n%b
 #     recognisable. Glass needs shapes softened, not erased. See the note there
 #     before raising it.
 #
-# Tradeoff worth knowing: notifications land on arbitrary content, and blur
-# softens detail without darkening it. Over a bright white page this much
-# transparency leaves the cream text weak. Tuned for a dark desktop — raise the
-# alpha if that becomes a problem in practice.
-background-color=#7E9A8833
+# Readability over bright content is handled in hyprland.lua, not here:
+# decoration.blur.brightness darkens what the blur samples. That is the knob to
+# reach for, because blur softens detail without darkening it — a blurred white
+# page is still white, so raising blur size does nothing for legibility, and
+# raising this alpha buys it only by spending the transparency. With brightness
+# at 0.60 this can stay low.
+background-color=#7E9A8866
 text-color=#DCDDAAFF
 border-color=#FFFFFF40
 progress-color=over #3EB26166
@@ -60,7 +62,7 @@ history=1
 default-timeout=5000
 
 [urgency=low]
-background-color=#7E9A8830
+background-color=#7E9A885C
 default-timeout=3000
 
 [urgency=critical]

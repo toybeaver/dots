@@ -18,12 +18,15 @@ configuration {
 }
 
 * {
-    /* Same sage frost and rim as mako, but denser: 0.50 here against mako's
-     * 0.20. Mako is small and transient and usually lands on dark chrome; rofi
-     * is a large surface you actually read a list on, and at 0.20 the backdrop
-     * competed with the text badly over bright content. Drop to #7E9A8833 for
-     * an exact mako match if the extra transparency is worth the legibility. */
-    glass:       #7E9A8880;
+    /* Same sage frost and rim as mako, but denser: 0.55 here against mako's
+     * 0.40. Mako is small and transient; rofi is a large surface you read a
+     * list on, so it carries a bit more body.
+     *
+     * Legibility over bright content comes mostly from
+     * decoration.blur.brightness in hyprland.lua, which darkens what the blur
+     * samples. Verified against a white terminal placed behind rofi. Raising
+     * blur size would not help — blur preserves average brightness. */
+    glass:       #7E9A888C;
     rim:         #FFFFFF40;
 
     /* fg is the shell's body cream. fg-bright is the same hue pushed toward

@@ -108,18 +108,28 @@ hl.config({
             color        = 0xee1a1a1a,
         },
 
-        -- Tuned for the mako glass notifications. Counterintuitively, more blur
-        -- looks worse: at size 6 / passes 3 the backdrop behind a notification
-        -- was homogenised into flat colour, which reads as "milky" rather than
-        -- glassy. Glass needs shapes softened but still recognisable, so keep
-        -- this moderate. The snek sidebar is unaffected either way — it reserves
-        -- an exclusive zone over a near-flat wallpaper, so there is nothing
-        -- behind it to blur.
+        -- Tuned for the mako and rofi glass. Counterintuitively, more blur looks
+        -- worse: at size 6 / passes 3 the backdrop behind a notification was
+        -- homogenised into flat colour, which reads as "milky" rather than
+        -- glassy. Glass needs shapes softened but still recognisable.
+        --
+        -- These settings reach every surface with a blur layer rule, and the
+        -- post-processing below is not cosmetic to them — see the note where the
+        -- snek sidebar's rule used to be.
         blur = {
             enabled   = true,
             size      = 4,
             passes    = 2,
             vibrancy  = 0.1696,
+
+            -- Darkens what the blur samples, which is what makes the mako and
+            -- rofi glass readable over bright content. Raising blur size does
+            -- NOT help there: blur softens detail but preserves average
+            -- brightness, so a blurred white page is still white. This is the
+            -- knob that actually mutes it, and unlike raising the surfaces'
+            -- alpha it costs no transparency.
+            brightness = 0.60,
+            contrast   = 0.90,
         },
     },
 
@@ -377,23 +387,26 @@ hl.window_rule({
 -- })
 -- overlayLayerRule:set_enabled(false)
 
--- Frosted-glass backdrop for the snek sidebar pills.
--- ignore_alpha skips any pixel below the threshold, so the transparent 45px
--- gutter is left alone and the blur mask traces the pills themselves.
--- xray samples the wallpaper rather than whatever window sits underneath, so
--- the pills keep a stable look as windows move around behind them.
-hl.layer_rule({
-    name  = "snek-sidebar-glass",
-    match = { namespace = "^snek-sidebar$" },
-
-    blur         = true,
-    ignore_alpha = 0.05,
-    xray         = true,
-})
+-- The snek sidebar deliberately has NO blur rule.
+--
+-- It used to. Removing it fixed the pills rendering dark and speckled with green
+-- dots. Two causes, both from the blur:
+--
+--   * brightness/contrast/vibrancy are applied to whatever the blur samples, so
+--     lowering brightness to 0.60 for mako and rofi silently darkened the pills
+--     too. Only where alpha exceeded ignore_alpha, which is why the transparent
+--     gutter beside them stayed correct and the effect looked inexplicable.
+--   * the pills' frost grain makes their alpha oscillate roughly 0.045-0.073,
+--     straddling ignore_alpha (0.05). Pixels either side of that threshold were
+--     blurred or not, producing the speckle.
+--
+-- The sidebar loses nothing: it reserves an exclusive zone over a near-flat
+-- wallpaper, so there was never anything behind it worth blurring. Its glass is
+-- drawn entirely by snek/shaders/glass.frag. Do not re-add a blur rule for it.
 
 -- Frosted glass for mako notifications.
--- No xray here, unlike the sidebar: notifications float over window content and
--- that content is exactly what should be frosted behind them.
+-- No xray: notifications float over window content, and that content is exactly
+-- what should be frosted behind them.
 hl.layer_rule({
     name  = "mako-glass",
     match = { namespace = "^notifications$" },
