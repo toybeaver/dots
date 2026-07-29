@@ -313,6 +313,74 @@ hl.bind(mainMod .. " + SHIFT + J", hl.dsp.window.move({ direction = "down" }))
 
 hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen({ action = "toggle" }))
 
+-- mainMod+TAB cycles focus through every mapped window on every workspace.
+--
+-- hl.dsp.window.cycle_next() cannot do this: it is confined to the active
+-- workspace, so with five workspaces in use it only ever reaches a fraction of
+-- the windows. Focusing a window that lives elsewhere switches to its
+-- workspace on its own, so walking a global list is all this needs.
+--
+-- Order is (workspace id, stable_id), deliberately NOT focus history. Focus
+-- history is what alt-tab uses, but alt-tab also knows when the modifier is
+-- released and commits the choice at that moment. A bind cannot see the
+-- release, so in MRU order the second press would walk straight back to where
+-- the first press came from -- a two-window ping-pong, not a cycle. A fixed
+-- order visits every window exactly once before wrapping.
+--
+-- stable_id is monotonic per window and never reused, so this order only
+-- changes when a window opens or closes, never as a side effect of focusing.
+--
+-- Special workspaces are excluded (their ids are negative); they are already
+-- reachable with mainMod+S.
+local function cycleAllWindows(step)
+    local windows = {}
+    for _, w in ipairs(hl.get_windows({ mapped = true })) do
+        if w.workspace and w.workspace.id > 0 then
+            windows[#windows + 1] = w
+        end
+    end
+
+    if #windows == 0 then return end
+
+    table.sort(windows, function(a, b)
+        if a.workspace.id ~= b.workspace.id then
+            return a.workspace.id < b.workspace.id
+        end
+        return a.stable_id < b.stable_id
+    end)
+
+    -- Find where we are. The active window can legitimately be absent from the
+    -- list -- nothing focused at all, or focus sitting on the special
+    -- workspace -- in which case start the cycle at the beginning rather than
+    -- doing nothing.
+    local current
+    local active = hl.get_active_window()
+    if active then
+        for i, w in ipairs(windows) do
+            if w.address == active.address then
+                current = i
+                break
+            end
+        end
+    end
+
+    if not current then
+        hl.dispatch(hl.dsp.focus({ window = windows[1] }))
+        return
+    end
+
+    -- Lua's % floors, so a step of -1 wraps to the end instead of going
+    -- negative.
+    hl.dispatch(hl.dsp.focus({ window = windows[(current - 1 + step) % #windows + 1] }))
+end
+
+hl.bind(mainMod .. " + TAB",                 function() cycleAllWindows(1) end)
+-- Reverse is bound under both names on purpose: with SHIFT held the US layout
+-- turns Tab into ISO_Left_Tab, and which of the two a compositor matches on is
+-- not something to leave to chance.
+hl.bind(mainMod .. " + SHIFT + TAB",          function() cycleAllWindows(-1) end)
+hl.bind(mainMod .. " + SHIFT + ISO_Left_Tab", function() cycleAllWindows(-1) end)
+
 -- Switch workspaces with mainMod + [1-5]
 -- Move active window to a workspace with mainMod + SHIFT + [1-5]
 for i = 1, 5 do
