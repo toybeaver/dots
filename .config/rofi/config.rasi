@@ -50,17 +50,18 @@ window {
     border-color:  @rim;
     border-radius: 10px;
 
-    /* Top-left, flush against the snek sidebar. rofi already honours the
-     * sidebar's 45px exclusive zone — measured landing at x=45 with zero
-     * offset — so no correction for the bar's width is needed.
+    /* Top-left, beside the snek sidebar. rofi already honours the sidebar's
+     * 45px exclusive zone — measured landing at x=45 with zero offset — so
+     * these are not a correction for the bar's width.
      *
-     * The offsets are deliberately 0. Hyprland draws a green active border on
-     * the window underneath (gaps_out 7 + border_size 2, so its top-left edge
-     * lands near 52,7); any positive offset here leaves that border peeking out
-     * in the gap. Starting at 45,0 covers it. */
+     * They line rofi up with the window grid instead: y-offset matches
+     * general.gaps_out (7), so rofi occupies the same slot a tiled window
+     * would, landing at 51,7. Keep them small. Hyprland draws a green active
+     * border on the window underneath, and a larger offset opens a gap for
+     * that border to peek through beside rofi. */
     location: north west;
-    x-offset: 0;
-    y-offset: 0;
+    x-offset: 6;
+    y-offset: 7;
 
     width:   42%;
     padding: 0;
