@@ -3,6 +3,7 @@ import "../consts"
 import "sidebar"
 
 import Quickshell
+import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
 
@@ -15,6 +16,9 @@ Scope {
     PanelWindow {
       required property var modelData
       screen: modelData
+
+      // Named so hyprland.lua can target this surface with the glass layer rule.
+      WlrLayershell.namespace: "snek-sidebar"
 
       color: "transparent"
 

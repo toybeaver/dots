@@ -10,9 +10,6 @@ SidebarPill {
   implicitHeight: 80
   Layout.bottomMargin: 10
 
-  // border.color: SnekStyles.get_color("fg")
-  border.color: "transparent"
-
   ColumnLayout {
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter

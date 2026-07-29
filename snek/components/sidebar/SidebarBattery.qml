@@ -32,14 +32,19 @@ SidebarPill {
         target: BatteryWatcher
         function onUpdate(percentage, is_charging) {
           if      (is_charging)     set_color("fg");
-          else if (percentage < 40) set_color("warning");
           else if (percentage < 25) set_color("danger");
+          else if (percentage < 40) set_color("warning");
           else                      set_color("fg");
         }
 
         function set_color(col: string) {
           display.color = SnekStyles.get_color(col);
-          root.border.color = SnekStyles.get_color(col);
+          // The normal state keeps the lit glass rim; only alert states tint
+          // it, otherwise every routine update would flatten this pill's
+          // material back to a solid ring.
+          root.edgeColor = (col === "fg")
+            ? SnekStyles.get_color("glass_edge")
+            : SnekStyles.get_color(col);
         }
       }
 
