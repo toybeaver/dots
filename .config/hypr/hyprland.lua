@@ -110,8 +110,8 @@ hl.config({
 
         blur = {
             enabled   = true,
-            size      = 3,
-            passes    = 1,
+            size      = 6,
+            passes    = 3,
             vibrancy  = 0.1696,
         },
     },
@@ -270,6 +270,13 @@ hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + G", hl.dsp.layout("togglesplit"))    -- dwindle only
 
+-- Screenshots. Print alone selects a region (niri's default behaviour);
+-- every capture lands in ~/Pictures/screenshots and on the clipboard.
+local screenshot = "/home/toyb/.config/hypr/scripts/screenshot.sh"
+hl.bind("Print",                    hl.dsp.exec_cmd(screenshot .. " region"))
+hl.bind("SHIFT + Print",            hl.dsp.exec_cmd(screenshot .. " screen"))
+hl.bind(mainMod .. " + Print",      hl.dsp.exec_cmd(screenshot .. " window"))
+
 -- Move focus with mainMod + arrow keys
 hl.bind(mainMod .. " + H",  hl.dsp.focus({ direction = "left" }))
 hl.bind(mainMod .. " + L", hl.dsp.focus({ direction = "right" }))
@@ -362,6 +369,20 @@ hl.window_rule({
 --     no_anim = true,
 -- })
 -- overlayLayerRule:set_enabled(false)
+
+-- Frosted-glass backdrop for the snek sidebar pills.
+-- ignore_alpha skips any pixel below the threshold, so the transparent 45px
+-- gutter is left alone and the blur mask traces the pills themselves.
+-- xray samples the wallpaper rather than whatever window sits underneath, so
+-- the pills keep a stable look as windows move around behind them.
+hl.layer_rule({
+    name  = "snek-sidebar-glass",
+    match = { namespace = "^snek-sidebar$" },
+
+    blur         = true,
+    ignore_alpha = 0.05,
+    xray         = true,
+})
 
 -- Hyprland-run windowrule
 hl.window_rule({
