@@ -402,6 +402,15 @@ hl.layer_rule({
     ignore_alpha = 0.05,
 })
 
+-- Frosted glass for the rofi launcher, same treatment as mako.
+hl.layer_rule({
+    name  = "rofi-glass",
+    match = { namespace = "^rofi$" },
+
+    blur         = true,
+    ignore_alpha = 0.05,
+})
+
 -- Hyprland-run windowrule
 hl.window_rule({
     name  = "move-hyprland-run",
