@@ -40,7 +40,7 @@ hl.on("hyprland.start", function ()
   hl.exec_cmd("systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE")
   hl.exec_cmd("mako")
   hl.exec_cmd("quickshell -c snek")
-  hl.exec_cmd("swaybg -i /home/toyb/Pictures/wallpaper/snek-1.jpg")
+  hl.exec_cmd("swaybg -o eDP-1 -i /home/toyb/Pictures/wallpaper/snek-1-dark.png -o HDMI-A-1 -i /home/toyb/Pictures/wallpaper/snek-2.jpg")
 end)
 
 
