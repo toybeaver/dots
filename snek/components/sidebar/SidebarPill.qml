@@ -5,10 +5,12 @@ import QtQuick
 import QtQuick.Layouts
 
 Rectangle {
-  implicitWidth: 35
+  implicitWidth: 40
   Layout.alignment: Qt.AlignRight
-  Layout.rightMargin: 2
 
-  radius: 8
-  color: SnekStyles.get_color("bg")
+  radius: 10
+
+  color: "transparent"
+  border.width: 2
+  border.color: SnekStyles.get_color("fg")
 }

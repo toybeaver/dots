@@ -28,6 +28,9 @@ Scope {
       ColumnLayout {
         anchors.fill: parent
         
+        SidebarHyprWorkspace {
+          Layout.topMargin: 10
+        }
         Rectangle { 
           Layout.fillHeight: true
         }
