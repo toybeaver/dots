@@ -108,10 +108,17 @@ hl.config({
             color        = 0xee1a1a1a,
         },
 
+        -- Tuned for the mako glass notifications. Counterintuitively, more blur
+        -- looks worse: at size 6 / passes 3 the backdrop behind a notification
+        -- was homogenised into flat colour, which reads as "milky" rather than
+        -- glassy. Glass needs shapes softened but still recognisable, so keep
+        -- this moderate. The snek sidebar is unaffected either way — it reserves
+        -- an exclusive zone over a near-flat wallpaper, so there is nothing
+        -- behind it to blur.
         blur = {
             enabled   = true,
-            size      = 6,
-            passes    = 3,
+            size      = 4,
+            passes    = 2,
             vibrancy  = 0.1696,
         },
     },
@@ -382,6 +389,17 @@ hl.layer_rule({
     blur         = true,
     ignore_alpha = 0.05,
     xray         = true,
+})
+
+-- Frosted glass for mako notifications.
+-- No xray here, unlike the sidebar: notifications float over window content and
+-- that content is exactly what should be frosted behind them.
+hl.layer_rule({
+    name  = "mako-glass",
+    match = { namespace = "^notifications$" },
+
+    blur         = true,
+    ignore_alpha = 0.05,
 })
 
 -- Hyprland-run windowrule

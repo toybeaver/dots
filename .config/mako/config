@@ -1,0 +1,68 @@
+# Mako — glass notifications, matching the snek sidebar.
+#
+# This is real frosted glass, unlike the sidebar. The sidebar reserves an
+# exclusive zone and sits over a near-flat wallpaper, so there is nothing
+# behind it to blur; notifications float over actual window content, so
+# Hyprland's blur has plenty of detail to work with.
+#
+# The compositor does the frosting, via the mako-glass layer rule in
+# hyprland.lua matched on the "notifications" namespace. This file supplies
+# what the blur shows through: translucency, the rounded shape, and the
+# hairline rim.
+
+font=Noto Sans 12
+markup=1
+format=<span font_family="Oswald" size="large" weight="600">%s</span>\n%b
+
+# A light sage frost, same family as the sidebar pills' white frost.
+#
+# Two things had to be right together, and they are easy to confuse:
+#
+#   - This alpha. At 0.68 the box looked solid: only 32% of the backdrop came
+#     through, and 32% of dark window content is still dark.
+#   - Hyprland's blur *strength*, in hyprland.lua. That one is counterintuitive
+#     — too much blur is what makes a panel look milky. At size 6 / passes 3 the
+#     backdrop was homogenised into flat colour, so nothing behind stayed
+#     recognisable. Glass needs shapes softened, not erased. See the note there
+#     before raising it.
+#
+# Tradeoff worth knowing: notifications land on arbitrary content, and blur
+# softens detail without darkening it. Over a bright white page this much
+# transparency leaves the cream text weak. Tuned for a dark desktop — raise the
+# alpha if that becomes a problem in practice.
+background-color=#7E9A8833
+text-color=#DCDDAAFF
+border-color=#FFFFFF40
+progress-color=over #3EB26166
+
+# 1px rim and a 10px radius, both matching SidebarPill.
+border-size=1
+border-radius=10
+
+padding=14
+margin=10
+outer-margin=12
+
+width=400
+height=170
+
+icon-location=left
+max-icon-size=48
+icon-border-radius=6
+
+anchor=top-right
+layer=top
+max-visible=5
+history=1
+
+# Notifications previously persisted forever because no config existed at all
+# and mako's built-in default is 0 (never expire).
+default-timeout=5000
+
+[urgency=low]
+background-color=#7E9A8830
+default-timeout=3000
+
+[urgency=critical]
+border-color=#DB4408CC
+default-timeout=20000
