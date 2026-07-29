@@ -13,12 +13,18 @@ Item {
   // Alert states tint the rim (see SidebarBattery).
   property color edgeColor: SnekStyles.get_color("glass_edge")
 
+  // Set false to keep the layout and spacing but drop the surface, leaving the
+  // content bare on the wallpaper. The workspace switcher uses this — its dots
+  // are already a strong enough shape that a pill around them just adds noise.
+  property bool glass: true
+
   // Draws a translucent overlay only — the real wallpaper composites through
   // from underneath, so the pill can never drift in colour from its
   // surroundings. See the header of glass.frag for why sampling it here was a
   // mistake.
   ShaderEffect {
     anchors.fill: parent
+    visible: pill.glass
 
     fragmentShader: Qt.resolvedUrl("../../shaders/glass.frag.qsb")
 

@@ -10,6 +10,9 @@ SidebarPill {
   implicitHeight: 80
   Layout.bottomMargin: 10
 
+  // Bare dots, no glass surface — see SidebarPill.glass.
+  glass: false
+
   ColumnLayout {
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
