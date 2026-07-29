@@ -7,7 +7,7 @@
 [[ -d "$HOME/.local/opt" ]] || mkdir -p $HOME/.local/opt
 
 # Environemnt =========================================================================================================
-export PATH=$PATH:/home/jj/.local/bin
+export PATH=$PATH:/home/$(whoami)/.local/bin
 export EDITOR=nvim
 
 # Alias ===============================================================================================================

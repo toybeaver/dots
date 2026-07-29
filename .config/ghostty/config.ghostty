@@ -10,4 +10,5 @@ link-url = true
 window-inherit-working-directory = true
 window-inherit-font-size = true
 window-theme = system
+window-decoration = none
 clipboard-trim-trailing-spaces = true
