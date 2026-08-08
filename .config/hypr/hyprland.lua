@@ -315,6 +315,40 @@ hl.bind(mainMod .. " + G", hl.dsp.layout("togglesplit"))    -- dwindle only
 -- Recover from a TTY (Ctrl+Alt+F2): loginctl unlock-session
 hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd("quickshell -c lock -n"))
 
+-- Lid close locks the session.
+--
+-- `locked = true` so it still fires if the session is somehow already locked;
+-- the locker's -n makes that a no-op rather than an error.
+--
+-- logind still suspends on lid close (HandleLidSwitch is left at its default).
+-- This only adds the lock, so the machine locks and then sleeps, and comes back
+-- to the lock screen. Nothing sequences the two, but logind honours inhibitor
+-- delays before sleeping while the locker maps in well under a second.
+hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd("quickshell -c lock -n"), { locked = true })
+
+-- Power button asks before shutting down, same press-again pattern as
+-- mainMod+SHIFT+Q.
+--
+-- This only works if logind is told to keep its hands off the key. Its default
+-- HandlePowerKey is `poweroff`, which shuts the machine down before Hyprland
+-- ever sees the press. See /etc/systemd/logind.conf.d/10-power-key.conf.
+local powerArmed = false
+
+hl.bind("XF86PowerOff", function()
+    if powerArmed then
+        hl.exec_cmd("systemctl poweroff")
+        return
+    end
+
+    powerArmed = true
+    hl.notification.create({
+        text = "Press the power button again to shut down",
+        duration = 3000,
+        icon = "warning",
+    })
+    hl.timer(function() powerArmed = false end, { timeout = 3000, type = "oneshot" })
+end)
+
 -- Screenshots. Print alone selects a region (niri's default behaviour);
 -- every capture lands in ~/Pictures/screenshots and on the clipboard.
 local screenshot = "/home/toyb/.config/hypr/scripts/screenshot.sh"
