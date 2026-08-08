@@ -18,27 +18,32 @@ configuration {
 }
 
 * {
-    /* Same sage frost and rim as mako, but denser: 0.55 here against mako's
-     * 0.40. Mako is small and transient; rofi is a large surface you read a
+    /* Same dark glass and rim as mako, but denser: 0.70 here against mako's
+     * 0.60. Mako is small and transient; rofi is a large surface you read a
      * list on, so it carries a bit more body.
      *
      * Legibility over bright content comes mostly from
      * decoration.blur.brightness in hyprland.lua, which darkens what the blur
      * samples. Verified against a white terminal placed behind rofi. Raising
      * blur size would not help — blur preserves average brightness. */
-    glass:       #7E9A888C;
-    rim:         #FFFFFF40;
+    glass:       #0E1118B3;
 
-    /* fg is the shell's body cream. fg-bright is the same hue pushed toward
-     * white, used where text needs to lead rather than sit back: what you type,
-     * and the selected row. */
-    fg:          #DCDDAA;
-    fg-bright:   #F4F5E4;
-    fg-dim:      #DCDDAA99;
+    /* Only the inputbar divider uses this now — the window border is gone.
+     * Deliberately faint: at 0x40 it read as a pale outline rather than a
+     * separator. */
+    rim:         #FFFFFF1F;
 
-    /* The selection is a pane of green glass, not a solid slab — it has to let
-     * the frost behind it through like everything else here does. */
-    accent:      #3EB26166;
+    /* fg is the shell's body text. fg-bright is the same hue pushed further
+     * toward white, used where text needs to lead rather than sit back: what
+     * you type, and the selected row. */
+    fg:          #EDF1F7;
+    fg-bright:   #FFFFFF;
+    fg-dim:      #EDF1F799;
+
+    /* The selection is a pane of coloured glass, not a solid slab — it has to
+     * let the frost behind it through like everything else here does. Neon rose
+     * is the one hue gon's magenta and alucard's crimson share. */
+    accent:      #FF3D8A66;
     transparent: #00000000;
 
     background-color: @transparent;
@@ -49,8 +54,10 @@ window {
     transparency:     "real";
     background-color: @glass;
 
-    border:        1px;
-    border-color:  @rim;
+    /* No border. Against near-black wallpapers a hairline rim reads as a pale
+     * outline stuck around the panel; the dark tint defines the shape on its
+     * own. */
+    border:        0;
     border-radius: 10px;
 
     /* Top-left, beside the snek sidebar. rofi already honours the sidebar's

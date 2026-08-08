@@ -40,7 +40,7 @@ hl.on("hyprland.start", function ()
   hl.exec_cmd("systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE")
   hl.exec_cmd("mako")
   hl.exec_cmd("quickshell -c snek")
-  hl.exec_cmd("swaybg -o eDP-1 -i /home/toyb/Pictures/wallpaper/snek-1-dark.png -o HDMI-A-1 -i /home/toyb/Pictures/wallpaper/snek-2.jpg")
+  hl.exec_cmd("swaybg -o eDP-1 -i /home/toyb/Pictures/wallpaper/gon.png -o HDMI-A-1 -i /home/toyb/Pictures/wallpaper/alucard.png")
 end)
 
 
@@ -86,8 +86,16 @@ hl.config({
         border_size = 2,
 
         col = {
-            active_border   = { colors = {"rgba(3ef261ff)", "rgba(00ff99ee)"}, angle = 45 },
-            inactive_border = "rgba(595959aa)",
+            -- Sampled straight out of gon.png: its neon frame runs hot magenta
+            -- to electric cyan, so the gradient is the wallpaper's own colours
+            -- rather than an approximation.
+            --
+            -- Held at 60% of those values (#f61cbe / #15fcfd). At full strength
+            -- the border is genuinely neon and pulls the eye off the window
+            -- content it frames. Scale both stops together to re-tune —
+            -- 70% is #ac1385 / #0eb0b1, 55% is #870f68 / #0b8a8b.
+            active_border   = { colors = {"rgba(931072ff)", "rgba(0c9797ee)"}, angle = 45 },
+            inactive_border = "rgba(3a3f4baa)",
         },
 
         -- Set to true to enable resizing windows by clicking and dragging on borders and gaps
@@ -128,13 +136,16 @@ hl.config({
             passes    = 2,
             vibrancy  = 0.1696,
 
-            -- Darkens what the blur samples, which is what makes the mako and
-            -- rofi glass readable over bright content. Raising blur size does
-            -- NOT help there: blur softens detail but preserves average
-            -- brightness, so a blurred white page is still white. This is the
-            -- knob that actually mutes it, and unlike raising the surfaces'
-            -- alpha it costs no transparency.
-            brightness = 0.60,
+            -- Darkens what the blur samples. Raising blur size does NOT help
+            -- legibility: blur softens detail but preserves average brightness,
+            -- so a blurred white page is still white. This is the knob that
+            -- mutes it.
+            --
+            -- Kept near 1.0 because mako and rofi now use a dark tint, which
+            -- handles legibility on its own. It was 0.60 back when they used a
+            -- light frost that fought the text; pulling it down now would just
+            -- crush the colour out of the blur for no benefit.
+            brightness = 0.90,
             contrast   = 0.90,
         },
     },
