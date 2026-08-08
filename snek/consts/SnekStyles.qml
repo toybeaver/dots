@@ -24,7 +24,18 @@ Singleton {
     // channel is a strength, not an opacity: the shader multiplies each by a
     // mask it derives from the pill's signed distance field.
     "glass_tint": "#0fffffff",
-    "glass_edge": "#ffffffff"
+
+    // The rim is a magenta-to-cyan gradient, the same pair Hyprland uses for
+    // the active window border and sampled from gon.png. Held at 75% of the
+    // wallpaper's neon — brighter than the window border's 60% because this is
+    // a 1px hairline on a 40px pill rather than a frame around a whole window,
+    // so it needs more punch to register at all.
+    //
+    // A white rim was correct against the old green wallpaper. Against near
+    // black it just reads grey, which is what stopped the pills matching the
+    // neon theme.
+    "glass_edge": "#b8158e",
+    "glass_edge_alt": "#0fbdbd"
   })
 
 

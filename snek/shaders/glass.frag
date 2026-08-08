@@ -22,6 +22,11 @@
 // What is left is light the glass adds by itself: a Fresnel rim, a Lambert lit
 // edge, a faint shaded opposite edge, and frost grain. All of it reads on any
 // backdrop, flat or busy.
+//
+// The rim runs as a gradient between two colours along the same 45 degree axis
+// Hyprland uses for its active window border, so the pills and the window frames
+// read as one system rather than two unrelated treatments. Against the near
+// black neon wallpapers a white rim just looked grey.
 
 layout(location = 0) in vec2 qt_TexCoord0;
 layout(location = 0) out vec4 fragColor;
@@ -37,6 +42,7 @@ layout(std140, binding = 0) uniform buf {
     vec2  pillSize;       // 112 px
     float spec;           // 120 lit-edge strength
     float grain;          // 124 frost micro-texture amount
+    vec4  edge2;          // 128 far end of the rim gradient
 };
 
 // Cheap value hash, used for the frost grain.
@@ -81,6 +87,11 @@ void main() {
     float lambert = dot(n2, L2);
     float soft    = pow(t, 3.0);
 
+    // Rim colour, interpolated along the 45 degree diagonal. Matches the angle
+    // of general.col.active_border in hyprland.lua. On a tall narrow pill this
+    // is mostly a vertical sweep, which is what the window borders look like too.
+    vec3 rim = mix(edge.rgb, edge2.rgb, clamp((uv.x + uv.y) * 0.5, 0.0, 1.0));
+
     // A real edge catches light all the way round, not just where the lamp is.
     float fres = (band * 0.60 + soft * 0.25) * fresnel;
 
@@ -112,7 +123,7 @@ void main() {
 
     // Premultiplied composite. `shade` contributes alpha with no colour, which
     // is exactly a black overlay — the darkening on the unlit edge.
-    vec3  c = tintRgb * veil + edge.rgb * hi;
+    vec3  c = tintRgb * veil + rim * hi;
     float a = clamp(veil + hi + shade, 0.0, 1.0);
 
     c = min(c, vec3(a));   // keep the premultiplied invariant c <= a

@@ -10,8 +10,15 @@ Item {
   implicitWidth: 40
   Layout.alignment: Qt.AlignRight
 
-  // Alert states tint the rim (see SidebarBattery).
+  // The two ends of the rim gradient. Alert states set BOTH to the same colour
+  // (see SidebarBattery) so the rim collapses to solid — a half-magenta,
+  // half-orange warning would read as decoration rather than a warning.
+  //
+  // Set explicitly rather than derived by comparing edgeColor against the
+  // default: get_color() returns a string and these are `color`, so `===`
+  // between them is always false and the gradient silently collapsed.
   property color edgeColor: SnekStyles.get_color("glass_edge")
+  property color edgeColorAlt: SnekStyles.get_color("glass_edge_alt")
 
   // Set false to keep the layout and spacing but drop the surface, leaving the
   // content bare on the wallpaper. The workspace switcher uses this — its dots
@@ -32,11 +39,12 @@ Item {
 
     property real radius: 10
     property real bevel: 3.5
-    property real fresnel: 0.13
-    property real spec: 0.22
+    property real fresnel: 0.60
+    property real spec: 0.20
     property real grain: 0.028
 
     property color tint: SnekStyles.get_color("glass_tint")
     property color edge: pill.edgeColor
+    property color edge2: pill.edgeColorAlt
   }
 }

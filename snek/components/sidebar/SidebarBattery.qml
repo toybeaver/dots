@@ -39,12 +39,17 @@ SidebarPill {
 
         function set_color(col: string) {
           display.color = SnekStyles.get_color(col);
-          // The normal state keeps the lit glass rim; only alert states tint
-          // it, otherwise every routine update would flatten this pill's
-          // material back to a solid ring.
-          root.edgeColor = (col === "fg")
-            ? SnekStyles.get_color("glass_edge")
-            : SnekStyles.get_color(col);
+
+          // Normal keeps the magenta-to-cyan rim gradient; an alert collapses
+          // both ends to the alert colour so it reads as a warning rather than
+          // as decoration.
+          if (col === "fg") {
+            root.edgeColor    = SnekStyles.get_color("glass_edge");
+            root.edgeColorAlt = SnekStyles.get_color("glass_edge_alt");
+          } else {
+            root.edgeColor    = SnekStyles.get_color(col);
+            root.edgeColorAlt = SnekStyles.get_color(col);
+          }
         }
       }
 
