@@ -4,5 +4,4 @@ import Quickshell
 
 Scope {
   Sidebar {}
-  
 }
