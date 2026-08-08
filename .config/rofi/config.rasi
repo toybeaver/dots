@@ -60,18 +60,14 @@ window {
     border:        0;
     border-radius: 10px;
 
-    /* Top-left, beside the snek sidebar. rofi already honours the sidebar's
-     * 45px exclusive zone — measured landing at x=45 with zero offset — so
-     * these are not a correction for the bar's width.
+    /* Centred — rofi's default, so no location/offset is set at all.
      *
-     * They line rofi up with the window grid instead: y-offset matches
-     * general.gaps_out (7), so rofi occupies the same slot a tiled window
-     * would, landing at 51,7. Keep them small. Hyprland draws a green active
-     * border on the window underneath, and a larger offset opens a gap for
-     * that border to peek through beside rofi. */
-    location: north west;
-    x-offset: 6;
-    y-offset: 7;
+     * It previously sat top-left beside the sidebar, pinned to the window grid.
+     * That was tuned when window borders were the old green; against the neon
+     * theme a centred panel reads better. If it ever moves back, note that rofi
+     * already honours the sidebar's 45px exclusive zone, so offsets are spacing
+     * rather than a correction for the bar's width — and keep them small, or
+     * the active window's border peeks through the gap beside it. */
 
     width:   42%;
     padding: 0;
