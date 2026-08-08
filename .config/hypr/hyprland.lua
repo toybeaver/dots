@@ -304,6 +304,17 @@ hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + G", hl.dsp.layout("togglesplit"))    -- dwindle only
 
+-- Session lock. Uses ext-session-lock-v1 via Quickshell, so the compositor
+-- itself holds the lock — killing the process does NOT reveal the session.
+--
+-- -n (--no-duplicate) matters: launching a second locker while one is already
+-- holding the lock would fail, and this makes the extra invocation a no-op
+-- rather than a confusing error.
+--
+-- If the locker ever dies while locked, the session stays locked by design.
+-- Recover from a TTY (Ctrl+Alt+F2): loginctl unlock-session
+hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd("quickshell -c lock -n"))
+
 -- Screenshots. Print alone selects a region (niri's default behaviour);
 -- every capture lands in ~/Pictures/screenshots and on the clipboard.
 local screenshot = "/home/toyb/.config/hypr/scripts/screenshot.sh"
