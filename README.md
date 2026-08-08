@@ -3,10 +3,9 @@
 Config for this machine. Hyprland + Quickshell, dark neon theme built around the
 wallpapers.
 
-Paired with **[quickshell](../quickshell)** (`~/Source/quickshell`), which holds
-the sidebar and the lock screen. Neither repo is complete on its own: the
-compositor config here launches those, and the greeter here duplicates the lock
-screen's look.
+The Quickshell configs — the sidebar and the lock screen — live in
+[`quickshell/`](quickshell/README.md). They were a separate repo until they were
+merged in here with their history intact.
 
 ## Layout
 
@@ -17,6 +16,7 @@ screen's look.
 | `.config/rofi/` | Launcher — dark glass |
 | `etc/greetd/` | Login greeter (Quickshell) + `install.sh` |
 | `etc/systemd/logind.conf.d/` | Hands the power key to the compositor |
+| `quickshell/` | Quickshell configs — the `snek` sidebar and the `lock` screen |
 | `.config/{alacritty,ghostty,niri,waybar,fuzzel}/` | Other configs, untouched by the theme work |
 
 `.config/*` is symlinked into place. `etc/*` is **copied** by an install script —
@@ -43,10 +43,12 @@ sudo pacman -S hyprland quickshell qt6-shadertools \
 ln -s ~/Source/dots/.config/hypr  ~/.config/hypr
 ln -s ~/Source/dots/.config/mako  ~/.config/mako
 ln -s ~/Source/dots/.config/rofi  ~/.config/rofi
-ln -s ~/Source/quickshell         ~/.config/quickshell
+ln -s ~/Source/dots/quickshell    ~/.config/quickshell
 ```
 
-That last one is the other repo. Without it the bar and lock screen do not start.
+`quickshell -c <name>` resolves `~/.config/quickshell/<name>/shell.qml`, so that
+last symlink is what makes `-c snek` and `-c lock` work. Without it the bar and
+lock screen do not start.
 
 ### 3. Greeter (root)
 
@@ -85,7 +87,7 @@ before the compositor ever sees the press.
 **Not available as a package.** Installed by hand at
 `/usr/share/fonts/TTF/Oswald/`. The bar, greeter, lock screen, mako titles and
 rofi prompt all ask for it by name and silently fall back to a default sans
-without it. See the [quickshell README](../quickshell/README.md#oswald-font--manual).
+without it. See [`quickshell/README.md`](quickshell/README.md#oswald-font--manual).
 
 ### 6. Wallpapers — not tracked
 

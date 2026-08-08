@@ -9,14 +9,16 @@ separate config, selected with `quickshell -c <dir>`.
 | `lock/` | Session lock screen (`ext-session-lock-v1` + PAM) |
 | `simple/`, `example/` | Earlier experiments, not in use |
 
-This repo is half of a pair. The compositor config that launches these lives in
-**[dots](../dots)** (`~/Source/dots`), and the greetd greeter there is a
-deliberate visual duplicate of `lock/` — see [Gotchas](#gotchas).
+These are launched by the compositor config in [`../.config/hypr/`](../.config/hypr),
+and the greetd greeter in [`../etc/greetd/`](../etc/greetd) is a deliberate visual
+duplicate of `lock/` — see [Gotchas](#gotchas).
+
+This was its own repository until it was merged into dots, history and all.
 
 ## Setup
 
 ```sh
-ln -s ~/Source/quickshell ~/.config/quickshell
+ln -s ~/Source/dots/quickshell ~/.config/quickshell
 ```
 
 `quickshell -c <name>` resolves `~/.config/quickshell/<name>/shell.qml`, so the
@@ -95,7 +97,7 @@ line — this is the index.
   directly locks your real screen:
 
   ```sh
-  printf 'exec "quickshell -p ~/Source/quickshell/lock/shell.qml; swaymsg exit"\n' > /tmp/lk
+  printf 'exec "quickshell -p ~/Source/dots/quickshell/lock/shell.qml; swaymsg exit"\n' > /tmp/lk
   WLR_BACKENDS=wayland sway --config /tmp/lk
   ```
 
