@@ -95,7 +95,12 @@ Item {
         // active border, so the whole system tilts the same way.
         fillGradient: logo.gradientDiamond ? diamondGradient : null
 
-        PathSvg { path: "M60,4 L81.7,39 L60,74 L38.3,39 Z" }
+        // Grown 0.3 units past the stroke edges (22.0/35.5 keeps the 0.62
+        // slope) so it OVERLAPS rather than merely abuts them. Exact adjacency
+        // is not enough: two antialiased edges at the same coordinate each
+        // cover ~half the pixel and composite to a visible dark seam. The
+        // diamond is drawn after the strokes, so the overlap is hidden.
+        PathSvg { path: "M60,3.5 L82,39 L60,74.5 L38,39 Z" }
       }
 
       // Serif caps, last so they close off the diamond's points. Centred on the
@@ -119,10 +124,10 @@ Item {
 
   LinearGradient {
     id: diamondGradient
-    x1: 38.3
-    y1: 4
-    x2: 81.7
-    y2: 74
+    x1: 38
+    y1: 3.5
+    x2: 82
+    y2: 74.5
     GradientStop { position: 0.0; color: SnekStyles.get_color("glass_edge") }
     GradientStop { position: 1.0; color: SnekStyles.get_color("glass_edge_alt") }
   }
