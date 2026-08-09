@@ -1,63 +1,27 @@
-// The control center's 3-row by 5-column grid.
+// The control center's box, and the two pages inside it.
 //
-// Coordinates in the comments are [row:col], 1-indexed, matching the design.
-// Layout.row / Layout.column are 0-indexed, hence the offset.
+// The panel keeps ONE size across both pages — the box never resizes, only its
+// contents slide. That is why the wifi page scrolls its list rather than
+// growing: a box that changes shape mid-transition reads as two different
+// panels rather than one panel turning a page.
 
 import "../../consts"
 import "../../glass"
 import "../../state"
-import "../../watchers"
+import "wifi"
 
 import Quickshell
-import Quickshell.Io
 import QtQuick
-import QtQuick.Layouts
 
 Item {
   id: panel
 
   readonly property int pad: ControlMetrics.px(18)
 
-  implicitWidth: grid.implicitWidth + panel.pad * 2
-  implicitHeight: grid.implicitHeight + panel.pad * 2
-
-  // Which power action is armed, or "" for none. Held here rather than on the
-  // tiles so arming one disarms the others — otherwise you could leave power
-  // armed, click restart, and have two live triggers on screen at once.
-  property string armed: ""
-
-  function fire(action: string, command: string) {
-    if (panel.armed === action) {
-      panel.armed = "";
-      disarmTimer.stop();
-      runner.command = ["sh", "-c", command];
-      runner.running = true;
-    } else {
-      panel.armed = action;
-      disarmTimer.restart();
-    }
-  }
-
-  // Same 3s window as the MOD+SHIFT+Q bind in hyprland.lua.
-  Timer {
-    id: disarmTimer
-    interval: 3000
-    onTriggered: panel.armed = ""
-  }
-
-  Process { id: runner }
-
-  // Closing the panel must not leave an action armed and waiting for the next
-  // time it opens.
-  Connections {
-    target: ControlCenterState
-    function onOpenChanged() {
-      if (!ControlCenterState.open) {
-        panel.armed = "";
-        disarmTimer.stop();
-      }
-    }
-  }
+  // Sized entirely by the main page. MainView.implicitWidth comes from its
+  // grid, not from the width assigned back to it, so this does not loop.
+  implicitWidth: main.implicitWidth + panel.pad * 2
+  implicitHeight: main.implicitHeight + panel.pad * 2
 
   Rectangle {
     anchors.fill: parent
@@ -76,96 +40,41 @@ Item {
     grain: 0.014
   }
 
-  // Swallows clicks that land on the panel body rather than on a tile, so the
-  // dim's dismiss handler underneath does not fire. Declared before the grid,
-  // so tiles stack above it and keep their own clicks.
+  // Swallows clicks that land on the panel body rather than on a control, so
+  // the dim's dismiss handler underneath does not fire. Declared before the
+  // pages, so they stack above it and keep their own clicks.
   MouseArea { anchors.fill: parent }
 
-  GridLayout {
-    id: grid
+  Item {
+    id: viewport
 
     anchors.fill: parent
     anchors.margins: panel.pad
+    clip: true
 
-    rows: 3
-    columns: 5
-    rowSpacing: ControlMetrics.px(10)
-    columnSpacing: ControlMetrics.px(10)
+    Row {
+      // Both pages are laid out side by side at viewport width; sliding the
+      // row is what changes pages. Nothing is destroyed or rebuilt, so the
+      // wifi list keeps its scroll position and any half-typed password.
+      x: -ControlCenterState.page * viewport.width
 
-    // ---- [1:1] [2:1] [3:1] ----
-    PowerTile {
-      Layout.row: 0
-      Layout.column: 0
-      icon: "power"
-      armed: panel.armed === "poweroff"
-      onClicked: panel.fire("poweroff", "systemctl poweroff")
+      Behavior on x {
+        // Off while the panel is hidden, so resetting the page on close snaps
+        // instead of animating a slide behind the fade out.
+        enabled: ControlCenterState.open
+        NumberAnimation { duration: 220; easing.type: Easing.OutCubic }
+      }
+
+      MainView {
+        id: main
+        width: viewport.width
+        height: viewport.height
+      }
+
+      WifiView {
+        width: viewport.width
+        height: viewport.height
+      }
     }
-
-    PowerTile {
-      Layout.row: 1
-      Layout.column: 0
-      icon: "restart"
-      armed: panel.armed === "reboot"
-      onClicked: panel.fire("reboot", "systemctl reboot")
-    }
-
-    PowerTile {
-      Layout.row: 2
-      Layout.column: 0
-      icon: "logout"
-      armed: panel.armed === "exit"
-      // Copied verbatim from hyprland.lua so both routes out of the session
-      // behave identically.
-      onClicked: panel.fire("exit",
-        "command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'")
-    }
-
-    // ---- [1-3:2] ----
-    VolumeTile {
-      Layout.row: 0
-      Layout.column: 1
-      Layout.rowSpan: 3
-      Layout.preferredWidth: ControlMetrics.px(56)
-      Layout.fillHeight: true
-    }
-
-    // ---- [1:3-5] ----
-    WifiTile {
-      Layout.row: 0
-      Layout.column: 2
-      Layout.columnSpan: 3
-      Layout.fillWidth: true
-    }
-
-    // ---- [3:3] and [3:5] ----
-    ToggleTile {
-      Layout.row: 2
-      Layout.column: 2
-      icon: "speaker"
-      active: AudioWatcher.muted
-      onClicked: AudioWatcher.toggleMute()
-    }
-
-    ToggleTile {
-      Layout.row: 2
-      Layout.column: 4
-      icon: "airplane"
-      active: NetworkWatcher.airplane
-      onClicked: NetworkWatcher.setAirplane(!NetworkWatcher.airplane)
-    }
-
-    // ---- reserved: [2:3] [2:4] [2:5] [3:4] ----
-    //
-    // These are load-bearing, not filler. GridLayout derives a column's width
-    // only from items that do NOT span it, so with the wifi tile spanning
-    // columns 3-5 and nothing else occupying column 4, that column would
-    // collapse to zero and mute would slide up against airplane.
-    //
-    // They are also exactly where the next tiles go — replace one with a real
-    // component and the grid absorbs it.
-    Item { Layout.row: 1; Layout.column: 2; Layout.preferredWidth: ControlMetrics.px(72); Layout.preferredHeight: ControlMetrics.px(72) }
-    Item { Layout.row: 1; Layout.column: 3; Layout.preferredWidth: ControlMetrics.px(72); Layout.preferredHeight: ControlMetrics.px(72) }
-    Item { Layout.row: 1; Layout.column: 4; Layout.preferredWidth: ControlMetrics.px(72); Layout.preferredHeight: ControlMetrics.px(72) }
-    Item { Layout.row: 2; Layout.column: 3; Layout.preferredWidth: ControlMetrics.px(72); Layout.preferredHeight: ControlMetrics.px(72) }
   }
 }

@@ -1,6 +1,7 @@
-// Wifi status, and a toggle for the radio.
+// Wifi status. The body toggles the radio; the chevron opens the network list.
 
 import "../../consts"
+import "../../state"
 import "../../watchers"
 
 import Quickshell
@@ -28,7 +29,7 @@ ControlTile {
   RowLayout {
     anchors.fill: parent
     anchors.leftMargin: ControlMetrics.px(16)
-    anchors.rightMargin: ControlMetrics.px(14)
+    anchors.rightMargin: ControlMetrics.px(6)
     spacing: ControlMetrics.px(13)
 
     TileIcon {
@@ -36,7 +37,7 @@ ControlTile {
       name: "wifi"
       size: ControlMetrics.px(26)
       color: SnekStyles.get_color("fg")
-      level: NetworkWatcher.strength
+      bars: NetworkWatcher.bars(NetworkWatcher.strength)
       off: !NetworkWatcher.wifiPresent || !NetworkWatcher.wifiEnabled
       opacity: tile.connected ? 1.0 : (tile.hovered ? 0.85 : 0.65)
       Behavior on opacity { NumberAnimation { duration: 120 } }
@@ -66,6 +67,32 @@ ControlTile {
         font.pixelSize: ControlMetrics.px(11)
         color: SnekStyles.get_color("muted")
         elide: Text.ElideRight
+      }
+    }
+
+    // Its own hit area, so the body's radio toggle and this do not fight. It
+    // sits above ControlTile's MouseArea in the stacking order, so it wins the
+    // clicks that land on it and lets the rest through.
+    Item {
+      Layout.alignment: Qt.AlignVCenter
+      Layout.preferredWidth: ControlMetrics.px(34)
+      Layout.fillHeight: true
+
+      TileIcon {
+        anchors.centerIn: parent
+        name: "chevronRight"
+        size: ControlMetrics.px(20)
+        color: SnekStyles.get_color("fg")
+        opacity: chevron.containsMouse ? 1.0 : 0.55
+        Behavior on opacity { NumberAnimation { duration: 120 } }
+      }
+
+      MouseArea {
+        id: chevron
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onClicked: ControlCenterState.showWifi()
       }
     }
   }

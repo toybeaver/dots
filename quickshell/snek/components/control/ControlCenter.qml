@@ -59,7 +59,11 @@ PanelWindow {
     anchors.fill: parent
 
     focus: true
-    Keys.onEscapePressed: ControlCenterState.close()
+    // Escape backs out one level before closing.
+    Keys.onEscapePressed: {
+      if (ControlCenterState.page !== 0) ControlCenterState.showMain();
+      else ControlCenterState.close();
+    }
 
     Rectangle {
       id: dim

@@ -85,6 +85,7 @@ modal panel. Design notes are in
 | Volume | Vertical slider on the default Pipewire sink, clamped to 100% |
 | Wifi | SSID plus local IPv4; click toggles the radio |
 | Mute / airplane | Toggles; airplane restores Bluetooth only if it was on beforehand |
+| Wifi list | Chevron on the wifi tile slides to a second page: connected network, refresh, and a scrollable list with inline password entry |
 
 Dismiss with `Escape`, a click outside, or the button again.
 
@@ -160,6 +161,12 @@ line — this is the index.
   anywhere, which is why `NetworkWatcher` shells out to `ip -4 -o addr show`.
 - **`ShapePath` is not an `Item`** — it has no `opacity`. Fading one path of an
   icon has to go through the stroke or fill colour's alpha channel.
+- **A NEW import directory needs a full restart, not a reload.** Adding
+  `components/control/wifi/` and `import "wifi"` made every reload fail with
+  `module "wifi" is not installed` while the already-running instance kept
+  serving the last good config — so the bar looked fine and silently ignored
+  every subsequent edit. Quickshell resolves directory imports when the process
+  starts. Kill and relaunch after adding one.
 - **Adding a pill shifts the whole bar by more than its height.** `ColumnLayout`
   contributes its default 5px spacing on top of each pill's explicit
   `Layout.bottomMargin`.

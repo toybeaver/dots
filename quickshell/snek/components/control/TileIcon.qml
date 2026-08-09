@@ -18,7 +18,8 @@ import QtQuick.Shapes
 Item {
   id: icon
 
-  // One of: power, restart, logout, speaker, airplane, wifi
+  // One of: power, restart, logout, speaker, airplane, wifi, chevronRight,
+  // chevronLeft, refresh
   property string name: ""
 
   property real size: 24
@@ -27,8 +28,9 @@ Item {
   // speaker only — draws the cross instead of the waves.
   property bool muted: false
 
-  // wifi only — 0.0 to 1.0, lights arcs progressively.
-  property real level: 1.0
+  // wifi only — 0 to 3. Four discrete levels: the bare dot, then one, two or
+  // three arcs. Callers map signal strength with NetworkWatcher.bars().
+  property int bars: 3
   // wifi only — draws the strike-through.
   property bool off: false
 
@@ -141,13 +143,42 @@ Item {
         }
       }
 
+      // ---- chevrons and refresh ----
+      ShapePath {
+        strokeColor: icon.color
+        strokeWidth: icon.stroke
+        fillColor: "transparent"
+        capStyle: ShapePath.RoundCap
+        joinStyle: ShapePath.RoundJoin
+        PathSvg {
+          path: icon.name === "chevronRight" ? "M9,5 L16,12 L9,19"
+              : icon.name === "chevronLeft"  ? "M15,5 L8,12 L15,19"
+              : ""
+        }
+      }
+
+      // A near-full circle with a head at the open end. Same construction as
+      // the restart glyph but lighter, since this one is a plain button.
+      ShapePath {
+        strokeColor: icon.color
+        strokeWidth: icon.stroke
+        fillColor: "transparent"
+        capStyle: ShapePath.RoundCap
+        PathSvg { path: icon.name === "refresh" ? "M12,5 A7,7 0 1 0 19,12" : "" }
+      }
+      ShapePath {
+        fillColor: icon.color
+        strokeColor: "transparent"
+        PathSvg { path: icon.name === "refresh" ? "M11.6,2.2 L15.8,5 L11.6,7.8 Z" : "" }
+      }
+
       // ---- wifi ----
       // Three arcs struck about a centre below the icon, plus the dot. Each arc
       // lights independently so the icon carries signal strength rather than
       // just connectedness.
       ShapePath {
         strokeColor: icon.fade(icon.color,
-          !icon.off && icon.level >= 0.70 ? 1.0 : 0.22)
+          !icon.off && icon.bars >= 3 ? 1.0 : 0.22)
         strokeWidth: icon.stroke
         fillColor: "transparent"
         capStyle: ShapePath.RoundCap
@@ -155,7 +186,7 @@ Item {
       }
       ShapePath {
         strokeColor: icon.fade(icon.color,
-          !icon.off && icon.level >= 0.40 ? 1.0 : 0.22)
+          !icon.off && icon.bars >= 2 ? 1.0 : 0.22)
         strokeWidth: icon.stroke
         fillColor: "transparent"
         capStyle: ShapePath.RoundCap
@@ -163,7 +194,7 @@ Item {
       }
       ShapePath {
         strokeColor: icon.fade(icon.color,
-          !icon.off && icon.level > 0.0 ? 1.0 : 0.22)
+          !icon.off && icon.bars >= 1 ? 1.0 : 0.22)
         strokeWidth: icon.stroke
         fillColor: "transparent"
         capStyle: ShapePath.RoundCap
