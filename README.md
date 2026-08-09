@@ -126,7 +126,12 @@ socket rather than launching anything, since it lives inside the running bar. Se
   cosmetic: `decoration:blur` brightness/contrast/vibrancy tuned for mako and
   rofi once silently darkened the sidebar pills and made them speckle. The
   sidebar has no blur rule now, deliberately — see the note where its rule used
-  to be in `hyprland.lua`.
+  to be in `hyprland.lua`. mako, rofi and the control center panel do have one.
+- **`ignore_alpha` can scope a blur to part of a surface.** The control center
+  is one full-screen surface holding both the panel and the dim behind it, so
+  blurring it at the usual `0.05` would frost the whole desktop. The dim sits at
+  alpha 0.55 and the panel at ~0.91, so a threshold of 0.70 blurs the popup and
+  leaves the rest of the screen sharp.
 - **More blur looks worse.** At `size 6 / passes 3` the backdrop behind a
   notification homogenises into flat colour, which reads as milky rather than
   glassy. Glass wants shapes softened but still recognisable.

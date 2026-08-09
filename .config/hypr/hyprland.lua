@@ -570,6 +570,30 @@ hl.layer_rule({
     ignore_alpha = 0.05,
 })
 
+-- Frosted glass for the control center panel.
+--
+-- ignore_alpha is doing real work here, not just following the mako/rofi
+-- pattern. This surface covers the WHOLE screen — the panel plus the dim behind
+-- it — so blurring at the usual 0.05 would frost the entire desktop rather than
+-- the popup. The two regions sit at very different alphas:
+--
+--   dim only          0.55
+--   dim + panel base  ~0.89   (0.55 dim composited under the panel's own fill)
+--
+-- so a threshold between them blurs the panel and leaves the rest of the screen
+-- sharp. 0.70 sits clear of both.
+--
+-- Unlike the sidebar, the panel's alpha does not oscillate near the threshold —
+-- its grain is 0.014 on top of a fill of ~0.75, nowhere near 0.70 — so there is
+-- no risk of the speckle that killed the sidebar's rule.
+hl.layer_rule({
+    name  = "snek-control-glass",
+    match = { namespace = "^snek-control$" },
+
+    blur         = true,
+    ignore_alpha = 0.70,
+})
+
 -- Hyprland-run windowrule
 hl.window_rule({
     name  = "move-hyprland-run",

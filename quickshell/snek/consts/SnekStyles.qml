@@ -28,7 +28,16 @@ Singleton {
     // sidebar pills for the same reason rofi is denser than mako: it is a large
     // surface carrying text rather than a small transient one, and the glass
     // rim alone does not give text enough to sit on.
-    "panel": "#d10e1118",
+    //
+    // The panel now carries a compositor blur rule — see snek-control-glass in
+    // hyprland.lua. Held at 0.80 after comparing against 0.75: the frost is
+    // clearly visible at either value, but the extra density keeps a bright
+    // window behind the panel from washing it out, which is what made it feel
+    // thin before the blur existed.
+    //
+    // Do not raise this past ~0.9. Above that almost nothing of the backdrop
+    // survives and the blur rule becomes decoration with a cost.
+    "panel": "#cc0e1118",
 
     // Glass tokens, in #AARRGGBB. Consumed by shaders/glass.frag — the alpha
     // channel is a strength, not an opacity: the shader multiplies each by a

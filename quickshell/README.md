@@ -85,6 +85,7 @@ modal panel. Design notes are in
 | Volume | Vertical slider on the default Pipewire sink, clamped to 100% |
 | Wifi | SSID plus local IPv4; click toggles the radio |
 | Mute / airplane | Toggles; airplane restores Bluetooth only if it was on beforehand |
+| Surface | Dark fill at 0.80 plus a compositor blur rule (`snek-control-glass`), scoped to the panel with `ignore_alpha` |
 | Wifi list | Chevron on the wifi tile slides to a second page: connected network, refresh, and a scrollable list with inline password entry |
 
 Dismiss with `Escape`, a click outside, or the button again.
