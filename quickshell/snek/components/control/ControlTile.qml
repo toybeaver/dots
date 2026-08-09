@@ -28,11 +28,12 @@ Item {
 
   signal clicked
 
-  Layout.preferredWidth: 72
-  Layout.preferredHeight: 72
+  Layout.preferredWidth: ControlMetrics.px(72)
+  Layout.preferredHeight: ControlMetrics.px(72)
 
   GlassSurface {
     anchors.fill: parent
+    radius: ControlMetrics.px(10)
 
     edge: tile.edgeColor
     edge2: tile.edgeColorAlt

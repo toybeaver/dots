@@ -27,14 +27,14 @@ ControlTile {
 
   RowLayout {
     anchors.fill: parent
-    anchors.leftMargin: 16
-    anchors.rightMargin: 14
-    spacing: 13
+    anchors.leftMargin: ControlMetrics.px(16)
+    anchors.rightMargin: ControlMetrics.px(14)
+    spacing: ControlMetrics.px(13)
 
     TileIcon {
       Layout.alignment: Qt.AlignVCenter
       name: "wifi"
-      size: 26
+      size: ControlMetrics.px(26)
       color: SnekStyles.get_color("fg")
       level: NetworkWatcher.strength
       off: !NetworkWatcher.wifiPresent || !NetworkWatcher.wifiEnabled
@@ -51,7 +51,7 @@ ControlTile {
         Layout.fillWidth: true
         text: tile.title
         font.family: "Oswald"
-        font.pixelSize: 15
+        font.pixelSize: ControlMetrics.px(15)
         font.weight: 600
         color: SnekStyles.get_color("fg")
         opacity: tile.connected ? 1.0 : 0.80
@@ -63,7 +63,7 @@ ControlTile {
         text: tile.subtitle
         visible: tile.subtitle !== ""
         font.family: "Noto Sans"
-        font.pixelSize: 11
+        font.pixelSize: ControlMetrics.px(11)
         color: SnekStyles.get_color("muted")
         elide: Text.ElideRight
       }

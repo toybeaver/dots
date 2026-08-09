@@ -21,12 +21,12 @@ ControlTile {
 
   ColumnLayout {
     anchors.centerIn: parent
-    spacing: 5
+    spacing: ControlMetrics.px(5)
 
     TileIcon {
       Layout.alignment: Qt.AlignHCenter
       name: tile.icon
-      size: 22
+      size: ControlMetrics.px(22)
       color: SnekStyles.get_color("fg")
       muted: tile.icon === "speaker" && tile.active
       opacity: tile.active ? 1.0 : (tile.hovered ? 0.85 : 0.65)
@@ -37,7 +37,7 @@ ControlTile {
       Layout.alignment: Qt.AlignHCenter
       text: tile.label
       font.family: "Oswald"
-      font.pixelSize: 11
+      font.pixelSize: ControlMetrics.px(11)
       font.weight: 500
       color: SnekStyles.get_color("fg")
       opacity: tile.active ? 1.0 : (tile.hovered ? 0.85 : 0.65)

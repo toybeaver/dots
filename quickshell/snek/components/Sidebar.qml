@@ -23,6 +23,10 @@ Scope {
 
       required property var modelData
 
+      // One source of truth for the bar's width: the sidebar reserves it, and
+      // the control center needs it to position itself clear of the bar.
+      readonly property int barWidth: 45
+
       PanelWindow {
         screen: perScreen.modelData
 
@@ -31,7 +35,7 @@ Scope {
 
         color: "transparent"
 
-        implicitWidth: 45
+        implicitWidth: perScreen.barWidth
         anchors {
           top: true
           bottom: true
@@ -58,6 +62,7 @@ Scope {
 
       ControlCenter {
         modelData: perScreen.modelData
+        barWidth: perScreen.barWidth
       }
     }
   }

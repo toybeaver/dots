@@ -26,12 +26,12 @@ ControlTile {
 
   ColumnLayout {
     anchors.centerIn: parent
-    spacing: 5
+    spacing: ControlMetrics.px(5)
 
     TileIcon {
       Layout.alignment: Qt.AlignHCenter
       name: tile.icon
-      size: 22
+      size: ControlMetrics.px(22)
       color: tile.armed ? SnekStyles.get_color("danger") : SnekStyles.get_color("fg")
       opacity: tile.armed || tile.hovered ? 1.0 : 0.75
       Behavior on opacity { NumberAnimation { duration: 120 } }
@@ -41,7 +41,7 @@ ControlTile {
       Layout.alignment: Qt.AlignHCenter
       text: tile.armed ? "sure?" : tile.label
       font.family: "Oswald"
-      font.pixelSize: 11
+      font.pixelSize: ControlMetrics.px(11)
       font.weight: 500
       color: tile.armed ? SnekStyles.get_color("danger") : SnekStyles.get_color("fg")
       opacity: tile.armed || tile.hovered ? 1.0 : 0.75

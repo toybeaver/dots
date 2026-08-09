@@ -21,6 +21,11 @@ PanelWindow {
   required property var modelData
   screen: modelData
 
+  // Width of the sidebar, so the panel can clear it. Passed in rather than
+  // hardcoded — this window ignores the exclusive zone, so it has no other way
+  // to know where the bar ends.
+  required property int barWidth
+
   // Named so hyprland.lua can target this surface if it ever needs to.
   WlrLayershell.namespace: "snek-control"
 
@@ -74,12 +79,25 @@ PanelWindow {
     }
 
     ControlPanel {
-      anchors.centerIn: parent
+      // Sits beside the bar, bottom aligned with it, rather than centred. The
+      // bottom margin matches the last pill's Layout.bottomMargin so the panel
+      // and the bar end on the same line.
+      //
+      // The offset has to come from win.barWidth: this surface sets
+      // exclusionMode Ignore, so it extends under the bar and parent.left is
+      // the screen edge, not the bar's edge.
+      anchors.left: parent.left
+      anchors.bottom: parent.bottom
+      anchors.leftMargin: win.barWidth + 10
+      anchors.bottomMargin: 10
 
       visible: ControlCenterState.screen === win.modelData
 
       opacity: ControlCenterState.open ? 1.0 : 0.0
       scale: ControlCenterState.open ? 1.0 : 0.96
+
+      // Grows out of the corner nearest the button rather than from its middle.
+      transformOrigin: Item.BottomLeft
 
       Behavior on opacity {
         NumberAnimation { duration: 160; easing.type: Easing.OutCubic }

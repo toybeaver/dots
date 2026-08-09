@@ -17,14 +17,14 @@ ControlTile {
 
   ColumnLayout {
     anchors.fill: parent
-    anchors.topMargin: 14
-    anchors.bottomMargin: 12
-    spacing: 10
+    anchors.topMargin: ControlMetrics.px(14)
+    anchors.bottomMargin: ControlMetrics.px(12)
+    spacing: ControlMetrics.px(10)
 
     TileIcon {
       Layout.alignment: Qt.AlignHCenter
       name: "speaker"
-      size: 18
+      size: ControlMetrics.px(18)
       color: SnekStyles.get_color("fg")
       muted: AudioWatcher.muted
       opacity: AudioWatcher.muted ? 0.45 : 0.85
@@ -35,7 +35,7 @@ ControlTile {
 
       Layout.alignment: Qt.AlignHCenter
       Layout.fillHeight: true
-      implicitWidth: 10
+      implicitWidth: ControlMetrics.px(10)
 
       Rectangle {
         anchors.fill: parent
@@ -69,7 +69,7 @@ ControlTile {
           anchors.left: parent.left
           anchors.right: parent.right
           anchors.top: parent.top
-          height: 3
+          height: ControlMetrics.px(3)
           radius: height / 2
           color: SnekStyles.get_color("fg")
           opacity: AudioWatcher.muted ? 0.0 : 0.9
@@ -82,12 +82,12 @@ ControlTile {
         id: grab
 
         anchors.fill: parent
-        anchors.margins: -15
+        anchors.margins: -ControlMetrics.px(15)
         enabled: AudioWatcher.ready
         cursorShape: Qt.PointingHandCursor
 
         function applyAt(y: real) {
-          AudioWatcher.setVolume(1 - ((y - 15) / track.height));
+          AudioWatcher.setVolume(1 - ((y - ControlMetrics.px(15)) / track.height));
         }
 
         onPressed: mouse => grab.applyAt(mouse.y)
@@ -101,7 +101,7 @@ ControlTile {
       Layout.alignment: Qt.AlignHCenter
       text: AudioWatcher.ready ? `${Math.round(AudioWatcher.volume * 100)}` : "--"
       font.family: "Oswald"
-      font.pixelSize: 13
+      font.pixelSize: ControlMetrics.px(13)
       font.weight: 600
       color: SnekStyles.get_color("fg")
       opacity: AudioWatcher.muted ? 0.45 : 0.9

@@ -28,10 +28,13 @@ SidebarPill {
   HxhLogo {
     anchors.centerIn: parent
 
-    // The mark is 120x78 and its serifs stop resolving below roughly 30px wide,
-    // so it is drawn as wide as a 40px pill allows rather than at some nominal
-    // icon size.
-    size: 32
+    // The mark is 120x78, so width is the binding constraint in a 40px pill —
+    // at 32 it left only 4px either side and read as cramped. 26 gives it 7px
+    // of air, closer to the vertical breathing room it already had.
+    //
+    // Do not push much below this: the serifs are 6 units of 78, so they land
+    // near a single pixel and start to mush.
+    size: 26
 
     opacity: root.open || mouse.containsMouse ? 1.0 : 0.80
     Behavior on opacity { NumberAnimation { duration: 120 } }

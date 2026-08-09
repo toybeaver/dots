@@ -16,7 +16,7 @@ import QtQuick.Layouts
 Item {
   id: panel
 
-  readonly property int pad: 18
+  readonly property int pad: ControlMetrics.px(18)
 
   implicitWidth: grid.implicitWidth + panel.pad * 2
   implicitHeight: grid.implicitHeight + panel.pad * 2
@@ -61,13 +61,13 @@ Item {
 
   Rectangle {
     anchors.fill: parent
-    radius: 16
+    radius: ControlMetrics.px(16)
     color: SnekStyles.get_color("panel")
   }
 
   GlassSurface {
     anchors.fill: parent
-    radius: 16
+    radius: ControlMetrics.px(16)
     bevel: 5
     fresnel: 0.50
     spec: 0.14
@@ -89,8 +89,8 @@ Item {
 
     rows: 3
     columns: 5
-    rowSpacing: 10
-    columnSpacing: 10
+    rowSpacing: ControlMetrics.px(10)
+    columnSpacing: ControlMetrics.px(10)
 
     // ---- [1:1] [2:1] [3:1] ----
     PowerTile {
@@ -128,7 +128,7 @@ Item {
       Layout.row: 0
       Layout.column: 1
       Layout.rowSpan: 3
-      Layout.preferredWidth: 56
+      Layout.preferredWidth: ControlMetrics.px(56)
       Layout.fillHeight: true
     }
 
@@ -168,9 +168,9 @@ Item {
     //
     // They are also exactly where the next tiles go — replace one with a real
     // component and the grid absorbs it.
-    Item { Layout.row: 1; Layout.column: 2; Layout.preferredWidth: 72; Layout.preferredHeight: 72 }
-    Item { Layout.row: 1; Layout.column: 3; Layout.preferredWidth: 72; Layout.preferredHeight: 72 }
-    Item { Layout.row: 1; Layout.column: 4; Layout.preferredWidth: 72; Layout.preferredHeight: 72 }
-    Item { Layout.row: 2; Layout.column: 3; Layout.preferredWidth: 72; Layout.preferredHeight: 72 }
+    Item { Layout.row: 1; Layout.column: 2; Layout.preferredWidth: ControlMetrics.px(72); Layout.preferredHeight: ControlMetrics.px(72) }
+    Item { Layout.row: 1; Layout.column: 3; Layout.preferredWidth: ControlMetrics.px(72); Layout.preferredHeight: ControlMetrics.px(72) }
+    Item { Layout.row: 1; Layout.column: 4; Layout.preferredWidth: ControlMetrics.px(72); Layout.preferredHeight: ControlMetrics.px(72) }
+    Item { Layout.row: 2; Layout.column: 3; Layout.preferredWidth: ControlMetrics.px(72); Layout.preferredHeight: ControlMetrics.px(72) }
   }
 }
