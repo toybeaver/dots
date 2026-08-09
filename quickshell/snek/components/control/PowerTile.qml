@@ -15,7 +15,6 @@ ControlTile {
   id: tile
 
   property string icon: ""
-  property string label: ""
   property bool armed: false
 
   // Collapsing both ends of the rim to one colour is how state is signalled
@@ -24,27 +23,31 @@ ControlTile {
   edgeColor: tile.armed ? SnekStyles.get_color("danger") : SnekStyles.get_color("glass_edge")
   edgeColorAlt: tile.armed ? SnekStyles.get_color("danger") : SnekStyles.get_color("glass_edge_alt")
 
-  ColumnLayout {
+  TileIcon {
     anchors.centerIn: parent
-    spacing: ControlMetrics.px(5)
+    name: tile.icon
+    size: ControlMetrics.px(30)
+    color: tile.armed ? SnekStyles.get_color("danger") : SnekStyles.get_color("fg")
+    opacity: tile.armed || tile.hovered ? 1.0 : 0.75
+    Behavior on opacity { NumberAnimation { duration: 120 } }
+  }
 
-    TileIcon {
-      Layout.alignment: Qt.AlignHCenter
-      name: tile.icon
-      size: ControlMetrics.px(22)
-      color: tile.armed ? SnekStyles.get_color("danger") : SnekStyles.get_color("fg")
-      opacity: tile.armed || tile.hovered ? 1.0 : 0.75
-      Behavior on opacity { NumberAnimation { duration: 120 } }
-    }
+  // The one piece of text kept on these tiles, and only while armed.
+  //
+  // The rim and icon both go danger red, which is a strong signal, but these
+  // three actions are irreversible and a red icon alone does not say "this
+  // click will do it". Anchored to the bottom rather than stacked under the
+  // icon so arming does not shift the icon.
+  Text {
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.bottom: parent.bottom
+    anchors.bottomMargin: ControlMetrics.px(8)
 
-    Text {
-      Layout.alignment: Qt.AlignHCenter
-      text: tile.armed ? "sure?" : tile.label
-      font.family: "Oswald"
-      font.pixelSize: ControlMetrics.px(11)
-      font.weight: 500
-      color: tile.armed ? SnekStyles.get_color("danger") : SnekStyles.get_color("fg")
-      opacity: tile.armed || tile.hovered ? 1.0 : 0.75
-    }
+    visible: tile.armed
+    text: "sure?"
+    font.family: "Oswald"
+    font.pixelSize: ControlMetrics.px(11)
+    font.weight: 500
+    color: SnekStyles.get_color("danger")
   }
 }

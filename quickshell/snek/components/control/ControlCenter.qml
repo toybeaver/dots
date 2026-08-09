@@ -66,7 +66,7 @@ PanelWindow {
 
       anchors.fill: parent
       color: "#000000"
-      opacity: ControlCenterState.open ? 0.40 : 0.0
+      opacity: ControlCenterState.open ? 0.55 : 0.0
 
       Behavior on opacity {
         NumberAnimation { duration: 160; easing.type: Easing.OutCubic }

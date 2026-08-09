@@ -88,6 +88,20 @@ modal panel. Design notes are in
 
 Dismiss with `Escape`, a click outside, or the button again.
 
+It can also be driven from outside the shell, which is how the Copilot key opens
+it:
+
+```sh
+quickshell -c snek ipc call control toggle   # also: open, close
+```
+
+There is no process to launch — the control center lives inside the running bar,
+so a keybind has no other way to reach it. It opens on whichever monitor has
+focus.
+
+Size is one knob: `factor` in `consts/ControlMetrics.qml`. Every dimension goes
+through `px()`, so the panel scales as a unit.
+
 Adding a tile means dropping a component into one of the reserved cells with its
 `Layout.row`/`Layout.column` set — see the comment beside them in
 `ControlPanel.qml` for why they are placeholders rather than nothing.

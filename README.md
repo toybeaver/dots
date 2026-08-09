@@ -106,14 +106,15 @@ matches any more.
 | Key | |
 | --- | --- |
 | `Super` + `Escape` | Lock |
-| Copilot key | Lock — it emits `Shift+Super+F23`, so that chord is taken |
+| Copilot key | Control center — it emits `Shift+Super+F23`, so that chord is taken |
 | Lid close | Lock (logind still suspends afterwards) |
 | Power button | Press again within 3s to shut down |
 | `Print` | Region screenshot → clipboard + `~/Pictures/screenshots` |
 | `Shift`+`Print` / `Super`+`Print` | Whole monitor / active window |
 
-The control center — power, volume, wifi and radio toggles — is the last pill in
-the sidebar rather than a keybind. See
+The control center — power, volume, wifi and radio toggles — opens from the last
+pill in the sidebar or the Copilot key. The key reaches it over the shell's IPC
+socket rather than launching anything, since it lives inside the running bar. See
 [`quickshell/README.md`](quickshell/README.md#the-control-center).
 
 ## Gotchas

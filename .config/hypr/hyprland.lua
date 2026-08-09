@@ -315,14 +315,21 @@ hl.bind(mainMod .. " + G", hl.dsp.layout("togglesplit"))    -- dwindle only
 -- Recover from a TTY (Ctrl+Alt+F2): loginctl unlock-session
 hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd("quickshell -c lock -n"))
 
--- The Copilot key also locks.
+-- The Copilot key opens the control center.
 --
 -- Microsoft's spec has that key emit Shift+Super+F23 rather than a keysym of
 -- its own, which is why it binds like an ordinary chord. Confirmed on this
 -- keyboard by probing candidates at runtime, not assumed from the spec.
 --
 -- Anything bound to SUPER+SHIFT+F23 by hand would collide with it.
-hl.bind(mainMod .. " + SHIFT + F23", hl.dsp.exec_cmd("quickshell -c lock -n"))
+--
+-- This goes through the snek shell's IPC handler rather than launching
+-- anything: the control center lives inside the already running bar, so there
+-- is no process to start. It opens on whichever monitor has focus. If the bar
+-- is not running the call just fails and nothing happens.
+--
+-- It used to lock the session; MOD+Escape still does that.
+hl.bind(mainMod .. " + SHIFT + F23", hl.dsp.exec_cmd("quickshell -c snek ipc call control toggle"))
 
 -- Lid close locks the session.
 --

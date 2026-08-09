@@ -10,7 +10,6 @@ ControlTile {
   id: tile
 
   property string icon: ""
-  property string label: ""
   property bool active: false
 
   // Same idiom as the alert states elsewhere: the rim collapses to a single
@@ -19,28 +18,13 @@ ControlTile {
   edgeColor: tile.active ? SnekStyles.get_color("glass_edge_alt") : SnekStyles.get_color("glass_edge")
   edgeColorAlt: SnekStyles.get_color("glass_edge_alt")
 
-  ColumnLayout {
+  TileIcon {
     anchors.centerIn: parent
-    spacing: ControlMetrics.px(5)
-
-    TileIcon {
-      Layout.alignment: Qt.AlignHCenter
-      name: tile.icon
-      size: ControlMetrics.px(22)
-      color: SnekStyles.get_color("fg")
-      muted: tile.icon === "speaker" && tile.active
-      opacity: tile.active ? 1.0 : (tile.hovered ? 0.85 : 0.65)
-      Behavior on opacity { NumberAnimation { duration: 120 } }
-    }
-
-    Text {
-      Layout.alignment: Qt.AlignHCenter
-      text: tile.label
-      font.family: "Oswald"
-      font.pixelSize: ControlMetrics.px(11)
-      font.weight: 500
-      color: SnekStyles.get_color("fg")
-      opacity: tile.active ? 1.0 : (tile.hovered ? 0.85 : 0.65)
-    }
+    name: tile.icon
+    size: ControlMetrics.px(30)
+    color: SnekStyles.get_color("fg")
+    muted: tile.icon === "speaker" && tile.active
+    opacity: tile.active ? 1.0 : (tile.hovered ? 0.85 : 0.65)
+    Behavior on opacity { NumberAnimation { duration: 120 } }
   }
 }

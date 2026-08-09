@@ -97,7 +97,6 @@ Item {
       Layout.row: 0
       Layout.column: 0
       icon: "power"
-      label: "power"
       armed: panel.armed === "poweroff"
       onClicked: panel.fire("poweroff", "systemctl poweroff")
     }
@@ -106,7 +105,6 @@ Item {
       Layout.row: 1
       Layout.column: 0
       icon: "restart"
-      label: "restart"
       armed: panel.armed === "reboot"
       onClicked: panel.fire("reboot", "systemctl reboot")
     }
@@ -115,7 +113,6 @@ Item {
       Layout.row: 2
       Layout.column: 0
       icon: "logout"
-      label: "log out"
       armed: panel.armed === "exit"
       // Copied verbatim from hyprland.lua so both routes out of the session
       // behave identically.
@@ -145,7 +142,6 @@ Item {
       Layout.row: 2
       Layout.column: 2
       icon: "speaker"
-      label: "mute"
       active: AudioWatcher.muted
       onClicked: AudioWatcher.toggleMute()
     }
@@ -154,7 +150,6 @@ Item {
       Layout.row: 2
       Layout.column: 4
       icon: "airplane"
-      label: "airplane"
       active: NetworkWatcher.airplane
       onClicked: NetworkWatcher.setAirplane(!NetworkWatcher.airplane)
     }
