@@ -81,31 +81,77 @@ Singleton {
 
   // ---- scan results -------------------------------------------------------
   //
-  // A frozen snapshot, deliberately. The live model reorders as signal
-  // strengths drift, and a list that re-sorts under the cursor is hostile to
-  // click on — you aim at one network and connect to another. Order is
-  // recomputed only on entering the wifi view and on an explicit refresh.
+  // Order is frozen between refreshes but the OBJECTS are not cached. Only the
+  // SSID order is stored; the list itself is rebuilt from the live model on
+  // every evaluation.
   //
-  // Objects can be destroyed by the backend while still referenced here, so
-  // anything rendering this must tolerate nulls.
-  property var networks: []
+  // That split matters. Holding the WifiNetwork objects across model changes
+  // means holding pointers to access points NetworkManager has already torn
+  // down — APs come and go constantly while scanning, and every crash report
+  // from the first version of this ended with "Access point removed" followed
+  // by a segfault in a destructor.
+  //
+  // Why freeze the order at all: the live model reorders as signal strengths
+  // drift, and a list that re-sorts under the cursor connects you to whatever
+  // slid into place, not what you aimed at.
+  property var order: []
+
+  readonly property var networks: {
+    root.revision;
+    ControlCenterState.open;
+
+    const dev = root.wifiDevice;
+    if (!dev || !dev.networks) return [];
+
+    // One entry per SSID, keeping the strongest. A mesh or a roaming setup
+    // publishes the same name from several access points, and listing it three
+    // times is noise, not information.
+    const byName = new Map();
+    for (const net of dev.networks.values) {
+      if (!net || !net.name || net.name === "") continue;
+      const prev = byName.get(net.name);
+      if (!prev || net.signalStrength > prev.signalStrength) byName.set(net.name, net);
+    }
+
+    const out = [];
+    for (const name of root.order) {
+      const net = byName.get(name);
+      if (net) {
+        out.push(net);
+        byName.delete(name);
+      }
+    }
+    // Anything seen since the last refresh joins the end rather than shuffling
+    // the rows already on screen.
+    for (const net of byName.values()) out.push(net);
+    return out;
+  }
 
   readonly property bool wifiViewOpen: ControlCenterState.open && ControlCenterState.page === 1
 
+  // Recomputes the order only. The list rebuilds itself from the live model.
   function refresh() {
     const dev = root.wifiDevice;
     if (!dev || !dev.networks) {
-      root.networks = [];
+      root.order = [];
       return;
     }
 
-    const found = dev.networks.values.filter(n => n && n.name && n.name !== "");
-    found.sort((a, b) => {
+    const live = [];
+    const seen = new Set();
+    for (const net of dev.networks.values) {
+      if (!net || !net.name || net.name === "" || seen.has(net.name)) continue;
+      seen.add(net.name);
+      live.push(net);
+    }
+
+    live.sort((a, b) => {
       if (a.connected !== b.connected) return a.connected ? -1 : 1;
       if (a.known !== b.known) return a.known ? -1 : 1;
       return b.signalStrength - a.signalStrength;
     });
-    root.networks = found;
+
+    root.order = live.map(net => net.name);
   }
 
   // Scanning costs power, so it only runs while the list is actually on screen.

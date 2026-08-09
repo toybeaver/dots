@@ -162,6 +162,13 @@ line — this is the index.
   anywhere, which is why `NetworkWatcher` shells out to `ip -4 -o addr show`.
 - **`ShapePath` is not an `Item`** — it has no `opacity`. Fading one path of an
   icon has to go through the stroke or fill colour's alpha channel.
+- **Never hold Quickshell network objects across model changes.** The wifi list
+  originally cached the `WifiNetwork` objects to freeze their order. Access
+  points come and go constantly while scanning, so that array filled with
+  pointers to objects NetworkManager had already torn down, and the shell
+  segfaulted roughly once a minute with the wifi page open — every crash report
+  ending in `Access point removed` followed by a fault in a destructor. Freeze
+  the SSID *order* instead and rebuild the list from the live model each time.
 - **A NEW import directory needs a full restart, not a reload.** Adding
   `components/control/wifi/` and `import "wifi"` made every reload fail with
   `module "wifi" is not installed` while the already-running instance kept
