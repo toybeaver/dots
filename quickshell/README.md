@@ -75,8 +75,7 @@ values, so changing one there retunes every glass surface in the shell at once.
 ## The control center
 
 The last pill in the bar — the Hunter x Hunter mark — dims the screen and opens a
-modal panel. Design notes are in
-[`../docs/superpowers/specs/`](../docs/superpowers/specs).
+modal panel.
 
 | | |
 | --- | --- |
