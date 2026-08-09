@@ -1,5 +1,6 @@
 import "../watchers"
 import "../consts"
+import "control"
 import "sidebar"
 
 import Quickshell
@@ -13,34 +14,50 @@ Scope {
   Variants {
     model: Quickshell.screens
 
-    PanelWindow {
+    // Two surfaces per screen: the bar itself, and the control center overlay
+    // that covers the whole output. They cannot be one window — the bar is a
+    // 45px exclusive strip and the overlay must cover everything without
+    // reserving any space.
+    Scope {
+      id: perScreen
+
       required property var modelData
-      screen: modelData
 
-      // Named so hyprland.lua can target this surface with the glass layer rule.
-      WlrLayershell.namespace: "snek-sidebar"
+      PanelWindow {
+        screen: perScreen.modelData
 
-      color: "transparent"
+        // Named so hyprland.lua can target this surface with the glass layer rule.
+        WlrLayershell.namespace: "snek-sidebar"
 
-      implicitWidth: 45
-      anchors {
-        top: true
-        bottom: true
-        left: true
+        color: "transparent"
+
+        implicitWidth: 45
+        anchors {
+          top: true
+          bottom: true
+          left: true
+        }
+
+        ColumnLayout {
+          anchors.fill: parent
+
+          SidebarHyprWorkspace {
+            Layout.topMargin: 10
+          }
+          Rectangle {
+            Layout.fillHeight: true
+          }
+          SidebarBattery {}
+          SidebarClock {}
+          SidebarDate {}
+          SidebarControl {
+            targetScreen: perScreen.modelData
+          }
+        }
       }
 
-      ColumnLayout {
-        anchors.fill: parent
-        
-        SidebarHyprWorkspace {
-          Layout.topMargin: 10
-        }
-        Rectangle { 
-          Layout.fillHeight: true
-        }
-        SidebarBattery {}
-        SidebarClock {}
-        SidebarDate {}
+      ControlCenter {
+        modelData: perScreen.modelData
       }
     }
   }

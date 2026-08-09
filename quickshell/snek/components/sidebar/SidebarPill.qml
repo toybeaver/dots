@@ -1,4 +1,5 @@
 import "../../consts"
+import "../../glass"
 
 import Quickshell
 import QtQuick
@@ -25,26 +26,11 @@ Item {
   // are already a strong enough shape that a pill around them just adds noise.
   property bool glass: true
 
-  // Draws a translucent overlay only — the real wallpaper composites through
-  // from underneath, so the pill can never drift in colour from its
-  // surroundings. See the header of glass.frag for why sampling it here was a
-  // mistake.
-  ShaderEffect {
+  GlassSurface {
     anchors.fill: parent
     visible: pill.glass
 
-    fragmentShader: Qt.resolvedUrl("../../shaders/glass.frag.qsb")
-
-    property vector2d pillSize: Qt.vector2d(pill.width, pill.height)
-
-    property real radius: 10
-    property real bevel: 3.5
-    property real fresnel: 0.60
-    property real spec: 0.20
-    property real grain: 0.028
-
-    property color tint: SnekStyles.get_color("glass_tint")
-    property color edge: pill.edgeColor
-    property color edge2: pill.edgeColorAlt
+    edge: pill.edgeColor
+    edge2: pill.edgeColorAlt
   }
 }

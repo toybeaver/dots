@@ -16,7 +16,7 @@ merged in here with their history intact.
 | `.config/rofi/` | Launcher — dark glass |
 | `etc/greetd/` | Login greeter (Quickshell) + `install.sh` |
 | `etc/systemd/logind.conf.d/` | Hands the power key to the compositor |
-| `quickshell/` | Quickshell configs — the `snek` sidebar and the `lock` screen |
+| `quickshell/` | Quickshell configs — the `snek` sidebar, its control center, and the `lock` screen |
 | `.config/{alacritty,ghostty,niri,waybar,fuzzel}/` | Other configs, untouched by the theme work |
 
 `.config/*` is symlinked into place. `etc/*` is **copied** by an install script —
@@ -111,6 +111,10 @@ matches any more.
 | Power button | Press again within 3s to shut down |
 | `Print` | Region screenshot → clipboard + `~/Pictures/screenshots` |
 | `Shift`+`Print` / `Super`+`Print` | Whole monitor / active window |
+
+The control center — power, volume, wifi and radio toggles — is the last pill in
+the sidebar rather than a keybind. See
+[`quickshell/README.md`](quickshell/README.md#the-control-center).
 
 ## Gotchas
 

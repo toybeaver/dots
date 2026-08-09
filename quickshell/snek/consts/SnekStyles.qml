@@ -20,6 +20,16 @@ Singleton {
     "warning": "#ffc24b",
     "danger": "#ff4060",
 
+    // Secondary text — the IP under the SSID, a slider's percentage. Same value
+    // the lock screen and greeter use for their muted labels.
+    "muted": "#8b93a5",
+
+    // Base fill for the control center slab, in #AARRGGBB. Denser than the
+    // sidebar pills for the same reason rofi is denser than mako: it is a large
+    // surface carrying text rather than a small transient one, and the glass
+    // rim alone does not give text enough to sit on.
+    "panel": "#d10e1118",
+
     // Glass tokens, in #AARRGGBB. Consumed by shaders/glass.frag — the alpha
     // channel is a strength, not an opacity: the shader multiplies each by a
     // mask it derives from the pill's signed distance field.
