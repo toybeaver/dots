@@ -25,18 +25,13 @@ SidebarPill {
   edgeColor: root.open ? SnekStyles.get_color("glass_edge_alt")
                        : SnekStyles.get_color("glass_edge")
 
-  Image {
+  HxhLogo {
     anchors.centerIn: parent
-
-    source: Qt.resolvedUrl("../../icons/hxh.svg")
 
     // The mark is 120x78 and its serifs stop resolving below roughly 30px wide,
     // so it is drawn as wide as a 40px pill allows rather than at some nominal
-    // icon size. sourceSize rasterises at 2x so it stays crisp on HiDPI.
-    width: 32
-    height: Math.round(32 * 78 / 120)
-    sourceSize: Qt.size(64, Math.round(64 * 78 / 120))
-    smooth: true
+    // icon size.
+    size: 32
 
     opacity: root.open || mouse.containsMouse ? 1.0 : 0.80
     Behavior on opacity { NumberAnimation { duration: 120 } }

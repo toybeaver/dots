@@ -85,7 +85,7 @@ snek/
   state/ControlCenterState.qml      singleton: open + which screen
   watchers/NetworkWatcher.qml       singleton: wifi, IPv4, airplane
   watchers/AudioWatcher.qml         singleton: default sink volume/mute
-  icons/hxh.svg                     the logo
+  components/sidebar/HxhLogo.qml    the logo (QML, so the diamond can take theme colours)
   components/
     sidebar/SidebarControl.qml      the logo button
     control/
@@ -207,16 +207,23 @@ arcs, which a font glyph could not do.
 
 ### The logo
 
-`icons/hxh.svg`, hand-drawn: two X strokes with serif caps flanking a central
-diamond.
+`components/sidebar/HxhLogo.qml`, hand-drawn with `Shape`: two X strokes with
+serif caps flanking a central diamond.
 
-The mark is two-tone by design — black strokes, red diamond. Rendered in flat
-white the diamond merges into the strokes and the shape stops reading, so the
-diamond is separated by a **hairline negative-space gap**, cut with
-`fill-rule="evenodd"`. The silhouette survives in pure white.
+The mark is two-tone by design — black strokes, red diamond — and that contrast
+is load-bearing. Rendered flat white the diamond merges into the strokes and the
+shape collapses into a blob; this was confirmed by rendering, not assumed.
 
-Rendered at 22px inside the 40px pill. The button's rim collapses to cyan while
-the panel is open, matching the toggle tiles.
+**Amended after review.** The first build was an SVG, which forced one colour, so
+legibility was bought with hairline negative-space gaps around the diamond. That
+is not how the mark reads. It is now drawn in QML instead, which lets the diamond
+take the shell's own magenta-to-cyan pair from `SnekStyles` — solving it with
+colour the way the original does — and the geometry goes back to touching, with
+no gaps. `gradientDiamond: false` switches to flat magenta.
+
+Rendered at 32px inside the 40px pill; below roughly 30px the serifs stop
+resolving. The button's rim collapses to cyan while the panel is open, matching
+the toggle tiles.
 
 ## Out of scope
 
