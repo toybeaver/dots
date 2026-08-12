@@ -26,7 +26,7 @@
 set -eu
 
 # Order matters: this is the order the control center's < and > buttons walk.
-THEMES="hxh-neon-glass temp"
+THEMES="hxh-neon-glass neo-brutal temp"
 DEFAULT_THEME="hxh-neon-glass"
 
 # Resolved from this script's own location so the themes are found whether it is

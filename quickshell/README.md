@@ -6,6 +6,7 @@ separate config, selected with `quickshell -c <dir>`.
 | Config | What it is |
 | --- | --- |
 | `hxh-neon-glass/` | **Theme.** The default look — glass pills over a neon magenta/cyan rim |
+| `neo-brutal/` | **Theme.** Neo-brutalism — saturated blocks, black ink, hard offset shadows |
 | `temp/` | **Theme.** Flat white on black, square, no shader and no blur |
 | `shared/` | Not a config. The non-visual half — watchers and state, symlinked into every theme |
 | `bin/` | Not a config. `shell-theme`, the launcher and switcher |
@@ -86,12 +87,48 @@ The seam between the two is one file per theme:
 | | |
 | --- | --- |
 | `consts/Theme.qml` | Identity (`name`, `label`), layer namespaces, and the palette |
-| `glass/GlassSurface.qml` (hxh-neon-glass) | The material. A shader. |
+| `glass/GlassSurface.qml` (hxh-neon-glass) | The material. A translucent shader. |
+| `brutal/BrutalSurface.qml` (neo-brutal) | The same API, a flat block with a hard offset shadow |
 | `surface/Surface.qml` (temp) | The same API, drawn as a flat rectangle |
+
+They all declare the same properties, so a component copies between themes
+unchanged. What differs is which of them mean anything — each file says so at
+the top.
 
 `Theme.name` **must** match the directory name — the switcher passes it to
 `shell-theme`, and the Wayland layer namespaces are built from it so
 `hyprland.lua` can target one theme's surfaces without catching the others.
+
+### The brutalist theme
+
+`neo-brutal` is flat blocks, hard black ink, and a hard offset shadow. Nothing
+in it fades: no gradient, no blur, no soft corner.
+
+The offset shadow is not a shadow — it is a second solid rectangle, hard-edged,
+sitting down and to the right. A blurred shadow implies a light source and a
+soft material, which is what the style refuses. Hover **presses** the block into
+its shadow rather than lighting it; that displacement is the only animation the
+theme allows, and it moves in whole pixels.
+
+The palette carries a `neutral` token meaning "no hue assigned", so state
+components can say "no colour here" without naming one.
+
+**Geometry, because getting it wrong is invisible until it is everywhere.** The
+block fills its item exactly and the shadow OVERFLOWS bottom-right. The obvious
+alternative — fitting both inside the item by shrinking the block — puts the
+block's centre `offset/2` up and left of the item's centre, while every icon,
+slider and label centres on the item. Everything then sits low and right,
+uniformly, which reads as sloppy rather than as a geometry bug.
+
+The cost is that **every clipping ancestor must reserve `offset` of room on the
+right and bottom**, or it silently eats the shadow. `MainView` and `WifiView`
+both do this explicitly; the wifi list needed it twice over, since the
+`ListView` clips as well as the panel.
+
+Window borders break the theme's own rule on purpose: they are drawn in an
+accent rather than in black. Black is correct as *ink* — an outline around a
+coloured block — but as the only mark separating one window from the next it
+disappears against dark window content. See `desktop/hypr.lua`.
 
 ### Adding one
 

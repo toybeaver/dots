@@ -1,0 +1,100 @@
+/* Rofi — neo-brutalist launcher.
+ *
+ * A THEME file, loaded by ../../../.config/rofi/config.rasi through the
+ * active-theme symlink. Appearance only.
+ *
+ * Square, opaque, thick-bordered. `transparency: "real"` is still required or
+ * rofi composites against a backing of its own choosing.
+ */
+
+* {
+    surface:     #FFFFFFFF;
+    ink:         #000000FF;
+    fg:          #000000;
+    fg-dim:      #57534AFF;
+    accent:      #FF6BA8FF;
+    transparent: #00000000;
+
+    background-color: @transparent;
+    text-color:       @fg;
+}
+
+window {
+    transparency:     "real";
+    background-color: @surface;
+    border:           4px;
+    border-color:     @ink;
+    border-radius:    0;
+    width:            42%;
+    padding:          0;
+}
+
+mainbox {
+    children: [ inputbar, listview ];
+    padding:  16px;
+    spacing:  14px;
+}
+
+/* A boxed field, not an underline. Every element in this style is a block with
+ * its own border. */
+inputbar {
+    children:     [ prompt, entry ];
+    spacing:      10px;
+    padding:      10px 12px;
+    border:       3px;
+    border-color: @ink;
+}
+
+prompt {
+    font:           "Adwaita Sans Bold 13";
+    text-color:     @fg-dim;
+    vertical-align: 0.5;
+}
+
+entry {
+    font:              "Noto Sans 12";
+    text-color:        @fg;
+    placeholder:       "SEARCH";
+    placeholder-color: @fg-dim;
+    cursor-color:      @fg;
+    vertical-align:    0.5;
+}
+
+listview {
+    lines:     14;
+    columns:   1;
+    scrollbar: false;
+    spacing:   4px;
+    border:    0;
+}
+
+element {
+    padding:       8px 10px;
+    border-radius: 0;
+    spacing:       8px;
+}
+
+element normal.normal {
+    background-color: @transparent;
+    text-color:       @fg;
+}
+
+element alternate.normal {
+    background-color: @transparent;
+    text-color:       @fg;
+}
+
+/* The selected row is a filled block with a hard border, like everything else. */
+element selected.normal {
+    background-color: @accent;
+    text-color:       @ink;
+    border:           3px;
+    border-color:     @ink;
+}
+
+element-text {
+    font:             "Noto Sans 12";
+    text-color:       inherit;
+    background-color: @transparent;
+    vertical-align:   0.5;
+}
