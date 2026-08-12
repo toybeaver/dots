@@ -265,7 +265,12 @@ modal panel.
 | Wifi list | Chevron on the wifi tile slides to a second page: connected network, refresh, and a scrollable list with inline password entry |
 | Theme | `< name >` under wifi. The arrows call `bin/shell-theme`, which replaces the whole process |
 
-Dismiss with `Escape`, a click outside, or the button again.
+Dismiss with `Escape`, a click outside, or the button again — or by changing
+workspace, which closes all three. A popup left hanging over the workspace you
+just moved to belongs to the one you left, and it sits on the overlay layer
+with a full-screen click-catcher underneath, so it would eat your first click
+there. `shared/state/WorkspaceDismiss.qml`, instantiated from each theme's
+`shell.qml` — a singleton nothing reads is never constructed.
 
 It can also be driven from outside the shell, which is how the Copilot key opens
 it:

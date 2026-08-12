@@ -13,4 +13,8 @@ Scope {
 
   // Theme switching over IPC, so a keybind can reach it too.
   ThemeIpc {}
+
+  // Closes the calendar, the control center and the notification list when the
+  // workspace changes — they belong to the workspace you left.
+  WorkspaceDismiss {}
 }
