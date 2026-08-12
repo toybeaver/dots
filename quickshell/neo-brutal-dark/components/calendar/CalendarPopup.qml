@@ -34,10 +34,27 @@ PanelWindow {
 
   WlrLayershell.layer: WlrLayer.Overlay
 
+  // OnDemand, NOT Exclusive, and this is load-bearing rather than a preference.
+  //
+  // An exclusive-focus layer surface takes the keyboard away from the focused
+  // WINDOW. When it unmaps, Hyprland hands focus back to that window — and
+  // focusing a window that lives on another workspace switches to it. So with a
+  // popup open, changing workspace went: switch, popup closes on the workspace
+  // change, Hyprland restores the old window, and the workspace snaps straight
+  // back. The desktop simply refused to leave the workspace you were on.
+  //
+  // OnDemand does not take focus off the window, so there is nothing to restore
+  // and nothing to snap back to.
+  //
+  // Escape still works: verified by sending one through hl.dsp.send_shortcut and
+  // watching the dim lift. That it reached a Keys handler INSIDE the surface is
+  // also what says text entry is unaffected — key events are being delivered to
+  // this surface, which is the same path the wifi password field reads from.
+  //
   // Dropped back to None on close so the surface never swallows keystrokes
   // while it is invisible.
   WlrLayershell.keyboardFocus: CalendarState.open
-    ? WlrKeyboardFocus.Exclusive
+    ? WlrKeyboardFocus.OnDemand
     : WlrKeyboardFocus.None
 
   // Covers the screen but must not reserve any of it.

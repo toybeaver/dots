@@ -500,6 +500,17 @@ line — this is the index.
   segfaulted roughly once a minute with the wifi page open — every crash report
   ending in `Access point removed` followed by a fault in a destructor. Freeze
   the SSID *order* instead and rebuild the list from the live model each time.
+- **An overlay must not take EXCLUSIVE keyboard focus.** An exclusive-focus
+  layer surface takes the keyboard away from the focused *window*, and when it
+  unmaps Hyprland hands focus back to that window — which, if the window lives
+  on another workspace, switches to it. Combined with closing the popups on a
+  workspace change, that made the desktop refuse to leave the workspace you were
+  on: it switched, the popup closed, focus was restored, and the workspace
+  snapped straight back. All three popups use `OnDemand`, which never takes
+  focus off the window so there is nothing to restore. Escape still reaches
+  them — a key delivered to a handler inside the surface is also what says the
+  wifi password field still types.
+
 - **A theme that fails to start strands you.** The switcher lives inside the
   shell, so if the theme you switch *into* never comes up there is no bar, no
   control center and no keybind left to switch back with — the desktop is
