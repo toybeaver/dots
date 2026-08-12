@@ -1,5 +1,6 @@
 import "../shared/watchers"
 import "../consts"
+import "calendar"
 import "control"
 import "sidebar"
 
@@ -14,10 +15,10 @@ Scope {
   Variants {
     model: Quickshell.screens
 
-    // Two surfaces per screen: the bar itself, and the control center overlay
-    // that covers the whole output. They cannot be one window — the bar is a
-    // 45px exclusive strip and the overlay must cover everything without
-    // reserving any space.
+    // Three surfaces per screen: the bar itself, and the two overlays — the
+    // control center and the calendar — each covering the whole output. They
+    // cannot be one window: the bar is a 45px exclusive strip and an overlay
+    // must cover everything without reserving any space.
     Scope {
       id: perScreen
 
@@ -53,7 +54,9 @@ Scope {
           }
           SidebarBattery {}
           SidebarClock {}
-          SidebarDate {}
+          SidebarDate {
+            targetScreen: perScreen.modelData
+          }
           SidebarControl {
             targetScreen: perScreen.modelData
           }
@@ -61,6 +64,11 @@ Scope {
       }
 
       ControlCenter {
+        modelData: perScreen.modelData
+        barWidth: perScreen.barWidth
+      }
+
+      CalendarPopup {
         modelData: perScreen.modelData
         barWidth: perScreen.barWidth
       }

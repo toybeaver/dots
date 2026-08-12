@@ -24,6 +24,7 @@ Singleton {
 
   readonly property string sidebarLayer: root.name + "-sidebar"
   readonly property string controlLayer: root.name + "-control"
+  readonly property string calendarLayer: root.name + "-calendar"
 
   readonly property var colors: ({
     // Warm paper rather than white. Pure white behind pure black borders

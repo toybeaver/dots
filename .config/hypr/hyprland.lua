@@ -622,6 +622,29 @@ hl.layer_rule({
     ignore_alpha = 0.70,
 })
 
+-- Frosted glass for the calendar popup.
+--
+-- The same idea as the rule above, with an easier threshold. The calendar has
+-- no dim behind it — it is a glance widget, not a modal page — so this surface
+-- is fully transparent everywhere except the panel:
+--
+--   click-catcher     0.00
+--   panel base       ~0.80
+--
+-- 0.40 sits in the middle of a gap that wide, rather than in the 0.55/0.89
+-- squeeze the control center's dim leaves it.
+--
+-- Scoped to this theme alone, like every other layer rule here. The brutalist
+-- pair namespaces its calendar differently and its panel is opaque, so it
+-- matches nothing and wants nothing.
+hl.layer_rule({
+    name  = "hxh-neon-glass-calendar-glass",
+    match = { namespace = "^hxh-neon-glass-calendar$" },
+
+    blur         = true,
+    ignore_alpha = 0.40,
+})
+
 -- Hyprland-run windowrule
 hl.window_rule({
     name  = "move-hyprland-run",

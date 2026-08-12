@@ -86,8 +86,9 @@ directly rather than merged over defaults.
 ### What a theme owns, and what it does not
 
 Themes share behaviour and duplicate appearance. `shared/` holds the watchers
-(network, battery, time, audio) and the control center's open/page state; each
-theme symlinks it in as `shared/` and imports `"../shared/watchers"`.
+(network, battery, time, audio), the control center's open/page state and the
+calendar's open state and month arithmetic; each theme symlinks it in as
+`shared/` and imports `"../shared/watchers"`.
 
 Everything visual is copied, not shared. That is deliberate: claymorphism and
 neo-brutalism differ in component *structure*, not just colour, so a single
@@ -122,8 +123,8 @@ soft material, which is what the style refuses. Hover **presses** the block into
 its shadow rather than lighting it; that displacement is the only animation the
 theme allows, and it moves in whole pixels.
 
-Only five component files differ between the twins, and all five differ in one
-line: where the shadow's colour comes from.
+Seven component files differ between the twins, and every one of them differs
+on the same question: where the shadow's colour comes from.
 
 | | light | dark |
 | --- | --- | --- |
@@ -282,6 +283,46 @@ through `px()`, so the panel scales as a unit.
 Adding a tile means dropping a component into the reserved cell with its
 `Layout.row`/`Layout.column` set — see the comment beside it in `MainView.qml`
 for why it is a placeholder rather than nothing.
+
+## The calendar
+
+Clicking the date pill opens a month view beside the bar. Dismiss with
+`Escape`, a click outside, or the pill again.
+
+| | |
+| --- | --- |
+| Position | Beside the bar, bottom aligned with **the date pill** rather than with the screen |
+| Grid | Always 6 rows x 7 columns, so the box never changes height between months |
+| Week start | `Qt.locale().firstDayOfWeek`, so it follows the system locale rather than the author |
+| Stepping | The two chevrons; clicking the month name jumps back to today |
+| Marker | Only today is marked — a block in the brutalist themes, a cyan rim in the glass one |
+
+It is the control center's structural twin — a full-screen surface on the
+overlay layer that draws its panel on one screen — with one deliberate
+difference: **it does not dim the desktop.** A glance widget hanging off a pill
+is not a modal page, and dimming a whole display to show a 420px box reads as
+far heavier than the thing deserves. It keeps the full-screen click-catcher,
+which is what dismisses on an outside click and also what makes a second click
+on the date pill close rather than reopen — the catcher sits above the bar, so
+that click never reaches the pill.
+
+Opening the control center closes the calendar, and vice versa. Two
+full-screen catchers open at once would leave one stranded under the other, and
+the control center's IPC handler can be reached by keybind without going
+through either. `CalendarState` watches `ControlCenterState` and not the other
+way round, so the dependency stays one-directional.
+
+**Bottom alignment is measured, not written down.** `SidebarDate` reports the
+distance from the bottom of the bar up to its own bottom edge into
+`CalendarState.anchorInset`, and the popup anchors to that. A constant would be
+the sum of four pill heights, four margins and the layout's own spacing — it
+would drift by a few pixels the first time a pill was resized, which is exactly
+the kind of wrong that never gets noticed and never stops looking off.
+
+Shared and per-theme split the usual way: `shared/state/CalendarState.qml`
+holds the open state and builds the 42-cell grid, because "which days does
+August 2026 occupy" is arithmetic rather than a design decision. Everything
+drawn lives in each theme's `components/calendar/`.
 
 ## Gotchas
 

@@ -17,6 +17,7 @@ Singleton {
   // enough. hyprland.lua matches "^hxh-neon-glass-control$" for the blur.
   readonly property string sidebarLayer: root.name + "-sidebar"
   readonly property string controlLayer: root.name + "-control"
+  readonly property string calendarLayer: root.name + "-calendar"
 
   // Tuned for the gon / alucard wallpapers: both are near-black with the
   // subject centred, so the bar sits on black rather than the old green.
