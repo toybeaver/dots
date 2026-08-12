@@ -1,7 +1,7 @@
 theme = Argonaut
 #custom-shader = ./shaders/sparks-from-fire.glsl
 font-family = "Aporetic Sans Mono"
-font-size = 14
+font-size = 18
 font-thicken = true
 cursor-style = block
 cursor-style-blink = false
@@ -13,17 +13,4 @@ window-theme = system
 window-decoration = none
 clipboard-trim-trailing-spaces = true
 
-# Slight transparency, matching the mako/rofi glass surfaces. Hyprland blurs
-# translucent windows, so what comes through is blurred wallpaper rather than a
-# sharp show-through.
-#
-# 0.85 rather than the 0.95 that sounds about right on paper. The effect blends
-# the terminal background with whatever is behind it, and both are near-black
-# here — ghostty's background is #0e1019 and the wallpaper is nearly as dark, so
-# there is very little to reveal. Measured against an opaque window: 0.95 moved
-# the rendered background by a single value in one channel, which is invisible.
-# 0.85 is the point where it actually reads.
-#
-# Against a brighter wallpaper this would be far too transparent. Retune it if
-# the wallpaper changes.
-background-opacity = 0.85
+background-opacity = 1
