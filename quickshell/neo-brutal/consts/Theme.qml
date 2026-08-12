@@ -49,6 +49,11 @@ Singleton {
     // and nothing behind a block ever shows through.
     "panel": "#fff4f1e8",
 
+    // Ink for text and icons sitting ON a coloured block, as opposed to `fg`,
+    // which is for text on the panel or the bare desktop. identical to fg/muted here — the light theme's panel and blocks are both pale, so one ink serves both.
+    "on_block": "#000000",
+    "on_block_dim": "#57534a",
+
     // "No hue assigned". Means a plain white block here; the twin
     // defines the same NAME as the equivalent for its own inversion, which is
     // what lets ToggleTile and friends stay byte-identical across the two.

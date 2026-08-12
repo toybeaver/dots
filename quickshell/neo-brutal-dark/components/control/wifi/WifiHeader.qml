@@ -24,6 +24,7 @@ Item {
     anchors.fill: parent
     base: Theme.get_color("acc_yellow")
     edge: Theme.get_color("edge")
+    shadowColor: Qt.darker(Theme.get_color("acc_yellow"), 2.2)
   }
 
 

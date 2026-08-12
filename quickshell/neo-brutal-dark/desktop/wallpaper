@@ -1,0 +1,8 @@
+# Wallpaper for this theme, one "<output> <file>" per line.
+# See hxh-neon-glass/desktop/wallpaper for the format.
+#
+# Generated, not photographed — see the note in the README. A photograph behind
+# a style built entirely from flat fills and hard borders fights it; a field of
+# the theme's own colours, outlined the same way the shell is, does not.
+eDP-1     brutal-dark.png
+HDMI-A-1  brutal-dark.png

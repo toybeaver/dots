@@ -124,9 +124,9 @@ the running bar. See
 The desktop is **themed**, and a theme is more than the shell: it carries its
 own wallpaper, mako config, rofi theme and Hyprland borders/blur/shadows, all
 under `quickshell/<theme>/desktop/`. The `< >` tile in the control center
-switches between them. `hxh-neon-glass` is the default, `neo-brutal` is a
-brutalist theme in flat blocks and hard ink, and `temp` is a flat
-white-on-black theme kept as a template. See
+switches between them. `hxh-neon-glass` is the default, `neo-brutal` and
+`neo-brutal-dark` are a brutalist pair in flat blocks and hard ink, and `temp`
+is a flat white-on-black theme kept as a template. See
 [Themes](quickshell/README.md#themes).
 
 `quickshell/bin/shell-theme` owns every program whose appearance depends on the

@@ -55,6 +55,7 @@ Item {
   }
 
   BrutalSurface {
+    id: surfaceRow
     anchors.fill: parent
 
     // State recolours the row outright — the same idiom as every other
@@ -63,6 +64,7 @@ Item {
         : row.connecting ? Theme.get_color("acc_orange")
         : Theme.get_color("neutral")
     edge: Theme.get_color("edge")
+    shadowColor: Qt.darker(surfaceRow.base, 2.2)
 
     borderWidth: ControlMetrics.px(2)
     offset: ControlMetrics.px(4)

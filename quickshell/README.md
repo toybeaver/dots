@@ -7,6 +7,7 @@ separate config, selected with `quickshell -c <dir>`.
 | --- | --- |
 | `hxh-neon-glass/` | **Theme.** The default look — glass pills over a neon magenta/cyan rim |
 | `neo-brutal/` | **Theme.** Neo-brutalism — saturated blocks, black ink, hard offset shadows |
+| `neo-brutal-dark/` | **Theme.** The same, on black: deeper hues and hue-derived shadows |
 | `temp/` | **Theme.** Flat white on black, square, no shader and no blur |
 | `shared/` | Not a config. The non-visual half — watchers and state, symlinked into every theme |
 | `bin/` | Not a config. `shell-theme`, the launcher and switcher |
@@ -88,7 +89,7 @@ The seam between the two is one file per theme:
 | --- | --- |
 | `consts/Theme.qml` | Identity (`name`, `label`), layer namespaces, and the palette |
 | `glass/GlassSurface.qml` (hxh-neon-glass) | The material. A translucent shader. |
-| `brutal/BrutalSurface.qml` (neo-brutal) | The same API, a flat block with a hard offset shadow |
+| `brutal/BrutalSurface.qml` (both neo-brutal) | The same API, a flat block with a hard offset shadow |
 | `surface/Surface.qml` (temp) | The same API, drawn as a flat rectangle |
 
 They all declare the same properties, so a component copies between themes
@@ -99,10 +100,10 @@ the top.
 `shell-theme`, and the Wayland layer namespaces are built from it so
 `hyprland.lua` can target one theme's surfaces without catching the others.
 
-### The brutalist theme
+### The brutalist pair
 
-`neo-brutal` is flat blocks, hard black ink, and a hard offset shadow. Nothing
-in it fades: no gradient, no blur, no soft corner.
+`neo-brutal` and `neo-brutal-dark` are the same design. Flat blocks, hard ink
+outlines, and a hard offset shadow; nothing in either fades.
 
 The offset shadow is not a shadow — it is a second solid rectangle, hard-edged,
 sitting down and to the right. A blurred shadow implies a light source and a
@@ -110,8 +111,34 @@ soft material, which is what the style refuses. Hover **presses** the block into
 its shadow rather than lighting it; that displacement is the only animation the
 theme allows, and it moves in whole pixels.
 
-The palette carries a `neutral` token meaning "no hue assigned", so state
-components can say "no colour here" without naming one.
+Only five component files differ between the twins, and all five differ in one
+line: where the shadow's colour comes from.
+
+| | light | dark |
+| --- | --- | --- |
+| block | a hue | the same hue, ~75% luminance |
+| outline | black ink | near-black ink |
+| shadow | the same ink | `Qt.darker(accent, 2.2)` |
+| `neutral` | white | warm pale grey |
+| panel | cream, ink border | near-black, light border |
+
+**Why the shadow rule splits.** On paper, ink serves as outline and shadow at
+once. On black it cannot: an ink shadow is invisible, so the block loses the
+thing that gives it depth. An early version solved that by moving the hue onto
+the outline and shadow and leaving the block near-black — but then the border
+and shadow carried the same colour and merged into a single L-shape, and neither
+read as what it was. Deriving the shadow from the block's own hue keeps all
+three legible.
+
+**Ink comes in two kinds.** `on_block` is for text and icons sitting on a
+coloured block; `fg` is for text on the panel or the bare desktop. In the light
+theme they are the same value, because its panel and blocks are both pale — the
+distinction only earns its keep in the dark twin, where they are opposites.
+
+`neutral` means "no hue assigned" and is **pale in both twins**. It has to be:
+every block carries near-black ink, so a dark neutral leaves its text at 2.9:1
+and effectively unreadable. The workspace dots and the inactive toggles were the
+visible casualties before it was measured.
 
 **Geometry, because getting it wrong is invisible until it is everywhere.** The
 block fills its item exactly and the shadow OVERFLOWS bottom-right. The obvious
@@ -125,10 +152,13 @@ right and bottom**, or it silently eats the shadow. `MainView` and `WifiView`
 both do this explicitly; the wifi list needed it twice over, since the
 `ListView` clips as well as the panel.
 
-Window borders break the theme's own rule on purpose: they are drawn in an
-accent rather than in black. Black is correct as *ink* — an outline around a
-coloured block — but as the only mark separating one window from the next it
-disappears against dark window content. See `desktop/hypr.lua`.
+**Anything floating on the bare desktop breaks the ink rule.** mako and rofi
+have no panel behind them, so an ink border simply vanishes on the dark twin.
+mako's border becomes a darker shade of its own block — the same rule the shell
+derives shadows by — and rofi's becomes the accent. Both are noted in their
+files. The light twin needs neither: black on cream was always visible.
+
+Window borders break it too, and for the same reason. See `desktop/hypr.lua`.
 
 ### Adding one
 
