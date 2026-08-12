@@ -85,16 +85,17 @@ Item {
         }
       }
 
-      // Silence. The same toggle as right-clicking the bell, put where someone
-      // who never discovers the right click will still find it.
+      // Mute the arrival sound. NOT do-not-disturb — that is the bell's right
+      // click, and it suppresses the popup as well. This one is sound only:
+      // notifications still appear and still land in this list.
       Item {
         Layout.preferredWidth: panel.headerH
         Layout.fillHeight: true
 
         BrutalSurface {
           anchors.fill: parent
-          base: NotificationWatcher.dnd ? Theme.get_color("acc_orange")
-                                        : Theme.get_color("neutral")
+          base: NotificationWatcher.silent ? Theme.get_color("acc_orange")
+                                           : Theme.get_color("neutral")
           edge: Theme.get_color("edge")
           borderWidth: ControlMetrics.px(2)
           offset: ControlMetrics.px(3)
@@ -103,10 +104,10 @@ Item {
 
         TileIcon {
           anchors.centerIn: parent
-          name: "bell"
+          name: "speaker"
+          muted: NotificationWatcher.silent
           size: ControlMetrics.px(15)
           color: Theme.get_color("on_block")
-          off: NotificationWatcher.dnd
         }
 
         MouseArea {
@@ -114,7 +115,7 @@ Item {
           anchors.fill: parent
           hoverEnabled: true
           cursorShape: Qt.PointingHandCursor
-          onClicked: NotificationWatcher.toggleDnd()
+          onClicked: NotificationWatcher.toggleSilence()
         }
       }
 
@@ -182,7 +183,7 @@ Item {
         anchors.centerIn: parent
         visible: NotificationWatcher.count === 0
 
-        text: NotificationWatcher.dnd ? "SILENCED" : "NOTHING WAITING"
+        text: NotificationWatcher.dnd ? "DO NOT DISTURB" : "NOTHING WAITING"
         font.family: "Adwaita Sans"
         font.pixelSize: ControlMetrics.px(11)
         font.weight: 800

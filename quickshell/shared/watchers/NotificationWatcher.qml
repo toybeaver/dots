@@ -58,6 +58,23 @@ Singleton {
 
   property bool dnd: false
 
+  // Whether the arrival sound is muted — mako's `silent` mode. Sound only:
+  // notifications still appear and still land in the list. Separate from `dnd`,
+  // which suppresses the popup as well.
+  //
+  // Read back from mako on every refresh, so it stays right even if something
+  // else changes the mode.
+  property bool silent: false
+
+  // What the USER last asked for, which is what gets persisted. Kept apart from
+  // `silent` because that one follows mako, and at startup the two disagree for
+  // as long as it takes the mode to be applied — long enough for an unrelated
+  // save() to write the wrong value back over the file.
+  property bool silentWanted: false
+
+  // Whether the startup apply has run. See the note on silencer's onExited.
+  property bool silenceApplied: false
+
   // ---- watermarks ---------------------------------------------------------
   //
   // Both persist. Without that a theme switch — which replaces the whole shell
@@ -104,13 +121,35 @@ Singleton {
       root.seenId = saved.seen || 0;
       root.clearedId = saved.cleared || 0;
       root.hiddenIds = saved.hidden || [];
+      root.silentWanted = saved.silent === true;
+      root.loadedState = true;
+
+      // Push it back into mako. A mode is runtime state there, so a silenced
+      // desktop would start making noise again at every login without this.
+      root.applySilence();
+
       root.refresh();
     }
 
-    onLoadFailed: root.refresh()
+    onLoadFailed: {
+      // No file yet: the defaults above ARE the state, so writing is safe.
+      root.loadedState = true;
+      root.applySilence();
+      root.refresh();
+    }
   }
 
+  // False until the file has been read. save() refuses to write before that, or
+  // an action taken in the first moment after startup — a dismissal, a clear —
+  // would persist in-memory defaults of zero over the real watermarks and
+  // resurrect the entire history. The read is async and was measured taking
+  // over a second, which is well inside the window where a theme switch has
+  // already put the bar back on screen.
+  property bool loadedState: false
+
   function save() {
+    if (!root.loadedState) return;
+
     // Anything at or below the watermark is already excluded by it, so keeping
     // its id in the hidden set says the same thing twice.
     root.hiddenIds = root.hiddenIds.filter(id => id > root.clearedId);
@@ -118,7 +157,8 @@ Singleton {
     store.setText(JSON.stringify({
       "seen": root.seenId,
       "cleared": root.clearedId,
-      "hidden": root.hiddenIds
+      "hidden": root.hiddenIds,
+      "silent": root.silentWanted
     }));
   }
 
@@ -143,8 +183,11 @@ Singleton {
     command: ["sh", "-c",
       "{ printf '{\"live\":'; makoctl list -j;" +
       "  printf ',\"past\":'; makoctl history -j;" +
+      "  modes=$(makoctl mode);" +
       "  printf ',\"dnd\":';" +
-      "  if makoctl mode | grep -qx do-not-disturb; then printf true; else printf false; fi;" +
+      "  if printf '%s\\n' \"$modes\" | grep -qx do-not-disturb; then printf true; else printf false; fi;" +
+      "  printf ',\"silent\":';" +
+      "  if printf '%s\\n' \"$modes\" | grep -qx silent; then printf true; else printf false; fi;" +
       "  printf '}'; }"]
 
     stdout: StdioCollector {
@@ -170,6 +213,7 @@ Singleton {
     }
 
     root.dnd = payload.dnd === true;
+    root.silent = payload.silent === true;
 
     // Live entries win over history: the same notification appears in both for
     // a moment, and the live copy is the one that can still be dismissed.
@@ -365,6 +409,56 @@ Singleton {
   }
 
   Process { id: holder }
+
+  // The speaker button in the notification center. Sound only — the popup and
+  // the list are untouched.
+  function toggleSilence() {
+    root.silentWanted = !root.silentWanted;
+
+    // Saved on intent rather than on what mako reports back, so the file is
+    // right the instant it is clicked and cannot be raced by the refresh.
+    root.save();
+    root.applySilence();
+  }
+
+  function applySilence() {
+    silencer.command = ["makoctl", "mode",
+                        root.silentWanted ? "-a" : "-r", "silent"];
+    silencer.running = true;
+  }
+
+  Process {
+    id: silencer
+
+    // Marks the point after which mako's answer can be trusted over ours. Until
+    // the startup apply has actually run, mako still reports the mode from
+    // before the shell existed, and mirroring that back would undo the very
+    // setting we just restored.
+    onExited: root.silenceApplied = true
+  }
+
+  // Put the setting BACK when mako disagrees, rather than adopting mako's
+  // answer. The shell owns this switch — it is a button in the panel — and the
+  // realistic way the two diverge is mako being restarted, which drops every
+  // mode it was holding. Mirroring that was tried first and is the wrong way
+  // round: a restart silently forgot the user's setting, and the panel then
+  // reported sound was on because, by then, it was.
+  //
+  // Capped, so a mode mako will not accept cannot spin up processes forever.
+  property int silenceRetries: 0
+
+  onSilentChanged: {
+    if (!root.silenceApplied) return;
+
+    if (root.silent === root.silentWanted) {
+      root.silenceRetries = 0;
+      return;
+    }
+    if (root.silenceRetries < 3) {
+      root.silenceRetries++;
+      root.applySilence();
+    }
+  }
 
   function toggleDnd() {
     // -t, so mako owns the state and this never disagrees with it. Reading the

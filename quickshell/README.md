@@ -376,9 +376,33 @@ Popups anchor **top-left**, under the bell that collects them. No margin is
 needed to clear the bar: the sidebar reserves an exclusive zone and the
 compositor lays the layer surface out beside it, not under it.
 
-**Do-not-disturb is mako's own mode API** — separate from `reviewing`, so
-opening a panel never clobbers your own switch — plus one block in each
-`mako.conf`:
+**Sound** is mako's own `on-notify` binding, not the shell:
+
+```
+on-notify=exec pw-play "$HOME/.local/state/dots/active/notification.wav"
+```
+
+mako runs that in a POSIX shell, so `$HOME` expands — which is what keeps a
+hardcoded path out of the file. `shell-theme` links the sound alongside the
+other active-theme assets, so a theme may ship its own `desktop/notification.wav`
+and otherwise every theme shares the one at the root of the repo.
+
+The **speaker button** in the panel header mutes it, via a `silent` mode whose
+only content is `on-notify=none`. Sound only — notifications still appear and
+still land in the list. `do-not-disturb` silences it too; `reviewing`
+deliberately does not, since the panel being open is a reason not to draw over
+it rather than a reason to stop telling you something arrived.
+
+A mode is runtime state in mako, so the shell **re-applies the setting on
+startup** from `notifications.json` — otherwise a silenced desktop starts making
+noise again at every login. When mako and the shell disagree, the shell puts its
+own value **back** rather than adopting mako's, capped at three attempts. The
+opposite was tried first and is wrong: a mako restart drops every mode, the
+shell mirrored the loss, and the setting was silently forgotten.
+
+**Do-not-disturb is mako's own mode API** — separate from both `reviewing` and
+`silent`, so neither opening a panel nor muting the sound clobbers your own
+switch — plus one block in each `mako.conf`:
 
 ```
 [mode=do-not-disturb]

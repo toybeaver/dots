@@ -80,8 +80,9 @@ Item {
         elide: Text.ElideRight
       }
 
-      // Silence. The same toggle as right-clicking the bell, put where someone
-      // who never discovers the right click will still find it.
+      // Mute the arrival sound. NOT do-not-disturb — that is the bell's right
+      // click, and it suppresses the popup as well. This one is sound only:
+      // notifications still appear and still land in this list.
       Item {
         Layout.preferredWidth: panel.headerH
         Layout.fillHeight: true
@@ -90,11 +91,11 @@ Item {
           anchors.fill: parent
           radius: ControlMetrics.px(8)
 
-          // Collapsed to amber while silenced — solid rim means "this one".
-          edge: NotificationWatcher.dnd ? Theme.get_color("warning")
-                                        : Theme.get_color("edge")
-          edge2: NotificationWatcher.dnd ? Theme.get_color("warning")
-                                         : Theme.get_color("edge_alt")
+          // Collapsed to amber while muted — solid rim means "this one".
+          edge: NotificationWatcher.silent ? Theme.get_color("warning")
+                                           : Theme.get_color("edge")
+          edge2: NotificationWatcher.silent ? Theme.get_color("warning")
+                                           : Theme.get_color("edge_alt")
 
           fresnel: dndHit.containsMouse ? 0.90 : 0.60
           Behavior on fresnel {
@@ -104,10 +105,10 @@ Item {
 
         TileIcon {
           anchors.centerIn: parent
-          name: "bell"
+          name: "speaker"
+          muted: NotificationWatcher.silent
           size: ControlMetrics.px(15)
           color: Theme.get_color("fg")
-          off: NotificationWatcher.dnd
         }
 
         MouseArea {
@@ -115,7 +116,7 @@ Item {
           anchors.fill: parent
           hoverEnabled: true
           cursorShape: Qt.PointingHandCursor
-          onClicked: NotificationWatcher.toggleDnd()
+          onClicked: NotificationWatcher.toggleSilence()
         }
       }
 
@@ -185,7 +186,7 @@ Item {
         anchors.centerIn: parent
         visible: NotificationWatcher.count === 0
 
-        text: NotificationWatcher.dnd ? "SILENCED" : "NOTHING WAITING"
+        text: NotificationWatcher.dnd ? "DO NOT DISTURB" : "NOTHING WAITING"
         font.family: "Oswald"
         font.pixelSize: ControlMetrics.px(12)
         font.letterSpacing: 1

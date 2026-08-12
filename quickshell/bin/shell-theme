@@ -34,6 +34,10 @@ DEFAULT_THEME="hxh-neon-glass"
 # run through the ~/.config/quickshell symlink or straight out of the repo.
 THEME_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 
+# The dots checkout itself, one level up. Holds assets shared by every theme —
+# currently just the notification sound.
+REPO_ROOT=$(CDPATH= cd -- "$THEME_ROOT/.." && pwd)
+
 WALLPAPER_DIR="$HOME/Pictures/wallpaper"
 
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/dots"
@@ -151,6 +155,20 @@ link_assets() {
       log "warning: $1 has no desktop/$asset"
     fi
   done
+
+  # The notification sound, linked the same way so mako.conf can name a stable
+  # path instead of a theme. A theme may ship its own desktop/notification.wav;
+  # otherwise every theme shares the one at the root of the repo.
+  #
+  # Linked rather than left where it is so that mako's on-notify line stays
+  # theme-agnostic, which is the same rule the other three assets follow.
+  sound="$THEME_ROOT/$1/desktop/notification.wav"
+  [ -r "$sound" ] || sound="$REPO_ROOT/notification.wav"
+  if [ -r "$sound" ]; then
+    ln -sfn "$sound" "$ACTIVE_DIR/notification.wav"
+  else
+    log "warning: no notification sound for $1"
+  fi
 }
 
 # Rebuild swaybg for theme $1.
