@@ -14,10 +14,13 @@ SidebarPill {
   // these dots bare, because a pill around an already-strong shape just adds
   // noise — but in this theme the block IS the design language, and the
   // workspace switcher was the only thing floating loose on the wallpaper.
-  // `neutral`, not a hue — a white block in the light twin, a plain off-white
-  // outline in the dark one. The workspace dots already carry meaning through
-  // fill and position, so a colour on top of that is one signal too many.
-  accent: Theme.get_color("neutral")
+  //
+  // Orange, the same hue the restart tile carries in the control center. This
+  // was `neutral` first, on the reasoning that the dots already say which
+  // workspace you are on through fill and position and a colour on top of that
+  // is one signal too many — true as far as it goes, but it left the top of the
+  // bar reading as two pale blocks with nothing to tell them apart.
+  accent: Theme.get_color("acc_orange")
 
   ColumnLayout {
     anchors.horizontalCenter: parent.horizontalCenter
