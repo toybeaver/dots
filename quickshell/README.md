@@ -350,7 +350,34 @@ questions as one JSON document. The 120s timer is reconciliation, not polling:
 it exists so a monitor that stops delivering without exiting costs two minutes
 of a stale badge rather than a wrong badge until reboot.
 
-**Do-not-disturb is mako's own mode API**, plus one block in each
+**Actions only work while a notification is live, and that is mako, not a
+choice.** On expiry mako emits `NotificationClosed` and the sending app tears
+its side down, after which `InvokeAction` against that id does nothing —
+`makoctl invoke` still exits 0, which is how an earlier version of this came to
+claim the opposite. Measured on the bus: a live invoke emits `ActionInvoked`, a
+history invoke emits nothing at all. Rows therefore draw their buttons only
+while they can still do something.
+
+Opening the center widens that window rather than just quietening the screen.
+It puts mako into a **`reviewing` mode** — `invisible=1` plus
+`default-timeout=0` — so arrivals are hidden *and* held open for as long as the
+panel is up, which keeps their buttons working. `invisible` applies
+retroactively, so a toast already on screen vanishes when the panel opens
+(measured: 25998 notification pixels before, 0 after). Closing the panel
+dismisses what is live **before** lifting the mode; the other order bursts the
+whole held batch onto the screen with no timeout to clear it again.
+
+If you want actions to work on old notifications, that needs the other
+architecture — Quickshell owning the bus name, keeping each notification alive
+until you dismiss it from the center. That also buys icons and real timestamps,
+and costs a per-theme toast component.
+
+Popups anchor **top-left**, under the bell that collects them. No margin is
+needed to clear the bar: the sidebar reserves an exclusive zone and the
+compositor lays the layer surface out beside it, not under it.
+
+**Do-not-disturb is mako's own mode API** — separate from `reviewing`, so
+opening a panel never clobbers your own switch — plus one block in each
 `mako.conf`:
 
 ```

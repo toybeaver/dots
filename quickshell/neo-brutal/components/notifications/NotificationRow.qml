@@ -137,16 +137,22 @@ Item {
 
     // ---- actions ----------------------------------------------------------
     //
-    // Offered on history rows too. mako accepts InvokeAction for them and puts
-    // ActionInvoked on the bus; whether anything is still listening is the
-    // sending app's business, and a long-lived one (a mail client, a chat app)
-    // usually is.
+    // LIVE ROWS ONLY, and this is a hard limit of mako rather than a choice.
+    // When a notification expires mako emits NotificationClosed, the sending
+    // app tears its side down, and InvokeAction against that id becomes a
+    // silent no-op — `makoctl invoke` still exits 0, which is exactly how an
+    // earlier version of this file came to claim the opposite. Measured on the
+    // bus: a live invoke emits ActionInvoked, a history invoke emits nothing.
+    //
+    // So a button is drawn only while it can still do something. The window is
+    // wider than it looks: opening the center puts mako in `reviewing` mode,
+    // which holds arrivals open with no timeout for as long as the panel is up.
     Flow {
       Layout.fillWidth: true
       Layout.topMargin: ControlMetrics.px(2)
       spacing: ControlMetrics.px(4)
 
-      visible: repeater.count > 0
+      visible: row.item.live && repeater.count > 0
 
       Repeater {
         id: repeater

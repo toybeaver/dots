@@ -329,6 +329,43 @@ Singleton {
     }
   }
 
+  // ---- holding popups while the center is open ----------------------------
+  //
+  // mako's `reviewing` mode: invisible, and with no timeout. See the block in
+  // each theme's mako.conf for what it does and why it is a mode of its own
+  // rather than a second use of do-not-disturb.
+  //
+  // The no-timeout half is not just tidiness. An action can only be invoked
+  // while mako still holds the notification — on expiry it emits
+  // NotificationClosed and the sending app tears its side down too — so
+  // holding arrivals open for as long as the panel is showing them is the only
+  // window in which their buttons work at all.
+
+  function holdPopups() {
+    holder.command = ["makoctl", "mode", "-a", "reviewing"];
+    holder.running = true;
+  }
+
+  function releasePopups() {
+    // Dismiss BEFORE lifting the mode, and in one shell so the order is
+    // guaranteed. Everything held has no timeout, so removing the mode on its
+    // own would burst the whole batch onto the screen — permanently, since
+    // there is nothing left to expire them. Dismissed, they land in history,
+    // which is where the panel that just showed them keeps them anyway.
+    holder.command = ["sh", "-c", "makoctl dismiss -a; makoctl mode -r reviewing"];
+    holder.running = true;
+  }
+
+  // A shell that died with the center open leaves the mode behind, and a
+  // leftover `reviewing` silences the desktop with nothing on screen to explain
+  // it. Cleared on the way up.
+  Component.onCompleted: {
+    holder.command = ["makoctl", "mode", "-r", "reviewing"];
+    holder.running = true;
+  }
+
+  Process { id: holder }
+
   function toggleDnd() {
     // -t, so mako owns the state and this never disagrees with it. Reading the
     // mode and setting its opposite would race with anything else that touches

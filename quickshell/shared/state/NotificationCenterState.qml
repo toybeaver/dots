@@ -32,17 +32,31 @@ Singleton {
     CalendarState.close();
     root.screen = scr;
     root.open = true;
-
-    // Reading the list is what marks it read, so this happens on the way in.
-    // Refreshed at the same time: everything else here is driven by mako's
-    // signal, but opening the panel is the one moment where being a few seconds
-    // stale would actually be seen.
-    NotificationWatcher.refresh();
-    NotificationWatcher.markRead();
   }
 
   function close() {
     root.open = false;
+  }
+
+  // Hooked to the PROPERTY, not to toggle()/close(). The popups have to be held
+  // and released on every path the panel opens and shuts by, and two of those
+  // paths are the Connections below — which set `open` directly and never go
+  // near either function.
+  onOpenChanged: {
+    if (root.open) {
+      NotificationWatcher.holdPopups();
+
+      // Everything else is driven by mako's signal, but opening the panel is
+      // the one moment where being a few seconds stale would be seen.
+      NotificationWatcher.refresh();
+    } else {
+      NotificationWatcher.releasePopups();
+    }
+
+    // Marked on the way in AND on the way out. On the way in for what was
+    // already waiting; on the way out for anything that arrived while the panel
+    // was open, which the user was looking at the whole time.
+    NotificationWatcher.markRead();
   }
 
   // Popups close each other — three full-screen click-catchers on the overlay
