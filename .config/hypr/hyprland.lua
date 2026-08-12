@@ -645,6 +645,21 @@ hl.layer_rule({
     ignore_alpha = 0.40,
 })
 
+-- Frosted glass for the notification center.
+--
+-- Identical to the calendar's rule and needed for the same reason. This is not
+-- decoration: the panel's own fill is 0.80, and 0.80 over a bare desktop is a
+-- window you can read a terminal through. The blur is what turns a translucent
+-- rectangle into a surface. A new popup in this theme needs its own copy of
+-- this block, which is the intended cost of scoping blur per theme.
+hl.layer_rule({
+    name  = "hxh-neon-glass-notifications-glass",
+    match = { namespace = "^hxh-neon-glass-notifications$" },
+
+    blur         = true,
+    ignore_alpha = 0.40,
+})
+
 -- Hyprland-run windowrule
 hl.window_rule({
     name  = "move-hyprland-run",

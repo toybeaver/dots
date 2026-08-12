@@ -1,6 +1,7 @@
 import "../shared/watchers"
 import "../consts"
 import "calendar"
+import "notifications"
 import "control"
 import "sidebar"
 
@@ -46,9 +47,10 @@ Scope {
         ColumnLayout {
           anchors.fill: parent
 
-          SidebarHyprWorkspace {
-            Layout.topMargin: 10
+          SidebarNotifications {
+            targetScreen: perScreen.modelData
           }
+          SidebarHyprWorkspace {}
           Rectangle {
             Layout.fillHeight: true
           }
@@ -69,6 +71,11 @@ Scope {
       }
 
       CalendarPopup {
+        modelData: perScreen.modelData
+        barWidth: perScreen.barWidth
+      }
+
+      NotificationPopup {
         modelData: perScreen.modelData
         barWidth: perScreen.barWidth
       }

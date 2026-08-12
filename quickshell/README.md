@@ -86,9 +86,10 @@ directly rather than merged over defaults.
 ### What a theme owns, and what it does not
 
 Themes share behaviour and duplicate appearance. `shared/` holds the watchers
-(network, battery, time, audio), the control center's open/page state and the
-calendar's open state and month arithmetic; each theme symlinks it in as
-`shared/` and imports `"../shared/watchers"`.
+(network, battery, time, audio, notifications), the control center's open/page
+state, the calendar's open state and month arithmetic, and the notification
+center's open state; each theme symlinks it in as `shared/` and imports
+`"../shared/watchers"`.
 
 Everything visual is copied, not shared. That is deliberate: claymorphism and
 neo-brutalism differ in component *structure*, not just colour, so a single
@@ -123,7 +124,7 @@ soft material, which is what the style refuses. Hover **presses** the block into
 its shadow rather than lighting it; that displacement is the only animation the
 theme allows, and it moves in whole pixels.
 
-Seven component files differ between the twins, and every one of them differs
+Nine component files differ between the twins, and every one of them differs
 on the same question: where the shadow's colour comes from.
 
 | | light | dark |
@@ -323,6 +324,64 @@ Shared and per-theme split the usual way: `shared/state/CalendarState.qml`
 holds the open state and builds the 42-cell grid, because "which days does
 August 2026 occupy" is arithmetic rather than a design decision. Everything
 drawn lives in each theme's `components/calendar/`.
+
+## The notification center
+
+The bell pill at the top of the bar. Left click opens the list; **right click
+silences mako**; the badge counts what has arrived since it was last opened.
+
+**mako stays the daemon.** It owns `org.freedesktop.Notifications` and draws
+the popups, themed per theme in `desktop/mako.conf`. Quickshell ships its own
+`NotificationServer`, and using it would mean taking that bus name away from
+mako — only one process can hold it, so the two cannot coexist and every popup
+would have to be redrawn in QML, per theme.
+`shared/watchers/NotificationWatcher.qml` is therefore a *reader*.
+
+What mako gives us, all verified against a live daemon:
+
+| | |
+| --- | --- |
+| `fr.emersion.Mako` | `ListNotifications`, `ListHistory`, `InvokeAction`, `DismissNotifications`, `SetMode` |
+| `PropertiesChanged` | fires on `Notifications` **and** `Modes` — on arrival, dismissal and mode change |
+
+so the pill is **push-driven, not polled**. A single long-lived `gdbus monitor`
+sits on that signal, and each refresh is one subprocess that answers all three
+questions as one JSON document. The 120s timer is reconciliation, not polling:
+it exists so a monitor that stops delivering without exiting costs two minutes
+of a stale badge rather than a wrong badge until reboot.
+
+**Do-not-disturb is mako's own mode API**, plus one block in each
+`mako.conf`:
+
+```
+[mode=do-not-disturb]
+invisible=1
+```
+
+`invisible` hides the popup **without dropping the notification** — mako still
+tracks it, still expires it into history, still answers `ListNotifications` for
+it. Verified, and load-bearing: it is what lets the center keep collecting
+while the screen stays quiet. A rule that discarded them would make silencing
+and reviewing mutually exclusive.
+
+Three things mako does not give us, and what the watcher does instead:
+
+- **No timestamps.** Stamped on first sight. Anything already in mako's history
+  when the shell starts gets *no* time rather than a wrong one, which is why
+  rows sometimes show no age — see `primed`.
+- **No icons.** `app_icon` is a string and it is empty in practice. There is no
+  image data to have.
+- **No way to clear history.** It is mako's ring buffer and nothing can empty
+  it. Dismissal is bookkeeping in the shell — a watermark for "clear all", a
+  set of ids for individual rows — persisted to
+  `~/.local/state/dots/notifications.json` so a theme switch, which replaces the
+  whole shell process, does not resurrect a cleared inbox. Deliberately **not**
+  `Quickshell.statePath()`, which is scoped per shell config: each theme is a
+  different config, so clearing in one would leave them waiting in the next.
+
+`max-history` is raised to 50 in every `mako.conf`. The default of 5 is a "what
+did I just miss" buffer, not a history, and the shell cannot keep its own copy —
+it only ever sees what mako still holds.
 
 ## Gotchas
 

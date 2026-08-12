@@ -18,8 +18,8 @@ import QtQuick.Shapes
 Item {
   id: icon
 
-  // One of: power, restart, logout, speaker, airplane, wifi, chevronRight,
-  // chevronLeft, refresh
+  // One of: power, restart, logout, speaker, airplane, wifi, bell,
+  // chevronRight, chevronLeft, refresh
   property string name: ""
 
   property real size: 24
@@ -31,7 +31,7 @@ Item {
   // wifi only — 0 to 3. Four discrete levels: the bare dot, then one, two or
   // three arcs. Callers map signal strength with NetworkWatcher.bars().
   property int bars: 3
-  // wifi only — draws the strike-through.
+  // wifi and bell — draws the strike-through.
   property bool off: false
 
   readonly property real stroke: 2
@@ -216,6 +216,42 @@ Item {
         capStyle: ShapePath.RoundCap
         PathSvg { path: icon.name === "wifi" && icon.off ? "M4,5 L20,20" : "" }
       }
+
+      // ---- bell ----
+      // Dome, skirt and clapper, drawn as one outline plus one arc. Stroked
+      // rather than filled: at 22px a solid bell reads as a blob, and the
+      // silhouette is what makes it legible at that size.
+      ShapePath {
+        strokeColor: icon.color
+        strokeWidth: icon.stroke
+        fillColor: "transparent"
+        capStyle: ShapePath.RoundCap
+        joinStyle: ShapePath.RoundJoin
+        PathSvg {
+          path: icon.name === "bell"
+            ? "M12,3.4 A5.4,5.4 0 0 1 17.4,8.8 L17.4,13.1 L19.2,16.3 " +
+              "L4.8,16.3 L6.6,13.1 L6.6,8.8 A5.4,5.4 0 0 1 12,3.4 Z"
+            : ""
+        }
+      }
+      ShapePath {
+        strokeColor: icon.color
+        strokeWidth: icon.stroke
+        fillColor: "transparent"
+        capStyle: ShapePath.RoundCap
+        PathSvg { path: icon.name === "bell" ? "M9.9,18.4 A2.4,2.4 0 0 0 14.1,18.4" : "" }
+      }
+
+      // Silenced. Same strike the wifi icon uses, so "off" looks the same
+      // wherever it appears.
+      ShapePath {
+        strokeColor: icon.color
+        strokeWidth: icon.stroke
+        fillColor: "transparent"
+        capStyle: ShapePath.RoundCap
+        PathSvg { path: icon.name === "bell" && icon.off ? "M4,5 L20,20" : "" }
+      }
+
     }
   }
 }

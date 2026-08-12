@@ -18,6 +18,7 @@ Singleton {
   readonly property string sidebarLayer: root.name + "-sidebar"
   readonly property string controlLayer: root.name + "-control"
   readonly property string calendarLayer: root.name + "-calendar"
+  readonly property string notificationLayer: root.name + "-notifications"
 
   // Tuned for the gon / alucard wallpapers: both are near-black with the
   // subject centred, so the bar sits on black rather than the old green.
