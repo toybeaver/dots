@@ -2,7 +2,7 @@ spawn-at-startup "systemctl" "--user" "import-environment" "DISPLAY" "WAYLAND_DI
 spawn-at-startup "mako"
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "swaybg" "-i" "/home/toyb/Pictures/wallpaper/snek-1.jpg"
-spawn-at-startup "quickshell" "-c" "snek"
+spawn-at-startup "/home/toyb/.config/quickshell/bin/shell-theme" "start"
 
 input {
     keyboard {

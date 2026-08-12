@@ -12,11 +12,11 @@ merged in here with their history intact.
 | Path | |
 | --- | --- |
 | `.config/hypr/` | Compositor: binds, blur, borders, autostart, `scripts/screenshot.sh` |
-| `.config/mako/` | Notifications — dark glass |
-| `.config/rofi/` | Launcher — dark glass |
+| `.config/mako/` | Just a link to the active theme's mako config |
+| `.config/rofi/` | Launcher behaviour; its look comes from the active theme |
 | `etc/greetd/` | Login greeter (Quickshell) + `install.sh` |
 | `etc/systemd/logind.conf.d/` | Hands the power key to the compositor |
-| `quickshell/` | Quickshell configs — the `snek` sidebar, its control center, and the `lock` screen |
+| `quickshell/` | Quickshell configs — the themed sidebar and control center, the `lock` screen, and the `shell-theme` launcher |
 | `.config/{alacritty,ghostty,niri,waybar,fuzzel}/` | Other configs, untouched by the theme work |
 
 `.config/*` is symlinked into place. `etc/*` is **copied** by an install script —
@@ -47,8 +47,9 @@ ln -s ~/Source/dots/quickshell    ~/.config/quickshell
 ```
 
 `quickshell -c <name>` resolves `~/.config/quickshell/<name>/shell.qml`, so that
-last symlink is what makes `-c snek` and `-c lock` work. Without it the bar and
-lock screen do not start.
+last symlink is what makes `-c hxh-neon-glass` and `-c lock` work. Without it the bar
+and lock screen do not start, and `hyprland.lua` cannot find the theme launcher
+it autostarts.
 
 ### 3. Greeter (root)
 
@@ -91,9 +92,11 @@ without it. See [`quickshell/README.md`](quickshell/README.md#oswald-font--manua
 
 ### 6. Wallpapers — not tracked
 
-Images live in `~/Pictures/wallpaper/` and are not in this repo. The autostart
-line in `hyprland.lua` references `gon.png` (laptop) and `alucard.png` (external)
-by path; point it wherever yours are.
+Images live in `~/Pictures/wallpaper/` and are not in this repo. Each theme
+names the ones it wants in `quickshell/<theme>/desktop/wallpaper`, one
+`<output> <file>` line each; point those wherever yours are. Missing files are
+skipped with a warning rather than being fatal, so a fresh checkout still
+reaches a usable desktop.
 
 The theme colours are **sampled from `gon.png`** — its neon magenta `#f61cbe`
 and cyan `#15fcfd`, scaled down per surface: window borders at 60%, the sidebar
@@ -112,10 +115,22 @@ matches any more.
 | `Print` | Region screenshot → clipboard + `~/Pictures/screenshots` |
 | `Shift`+`Print` / `Super`+`Print` | Whole monitor / active window |
 
-The control center — power, volume, wifi and radio toggles — opens from the last
-pill in the sidebar or the Copilot key. The key reaches it over the shell's IPC
-socket rather than launching anything, since it lives inside the running bar. See
+The control center — power, volume, wifi, radio toggles and the theme switcher —
+opens from the last pill in the sidebar or the Copilot key. The key reaches it
+over the shell's IPC socket rather than launching anything, since it lives inside
+the running bar. See
 [`quickshell/README.md`](quickshell/README.md#the-control-center).
+
+The desktop is **themed**, and a theme is more than the shell: it carries its
+own wallpaper, mako config, rofi theme and Hyprland borders/blur/shadows, all
+under `quickshell/<theme>/desktop/`. The `< >` tile in the control center
+switches between them. `hxh-neon-glass` is the default; `temp` is a flat
+white-on-black theme kept as a template. See
+[Themes](quickshell/README.md#themes).
+
+`quickshell/bin/shell-theme` owns every program whose appearance depends on the
+theme — swaybg, mako and the shell — which is why Hyprland's autostart is a
+single line.
 
 ## Gotchas
 
@@ -132,6 +147,23 @@ socket rather than launching anything, since it lives inside the running bar. Se
   blurring it at the usual `0.05` would frost the whole desktop. The dim sits at
   alpha 0.55 and the panel at ~0.91, so a threshold of 0.70 blurs the popup and
   leaves the rest of the screen sharp.
+- **Layer rules are per theme, by design.** Each theme namespaces its surfaces
+  with its own name, so the blur rule matches `^hxh-neon-glass-control$` and not the
+  flat theme's opaque panel. A new theme that wants frosting needs its own copy
+  of that rule — blur tuning is part of a theme's material, not a global.
+- **Nothing outside `bin/shell-theme` should name a theme.** The autostart line,
+  the Copilot keybind, rofi's config and mako's all reach the current theme
+  through `~/.local/state/dots/active/`, precisely so a switch cannot leave them
+  pointing at something that is no longer running.
+- **`hyprctl reload` does not re-run the autostart hook.** Verified, and
+  load-bearing: a theme switch reloads Hyprland to pick up the new style block,
+  and if reload re-fired autostart every switch would launch a second shell,
+  mako and swaybg — and then recurse.
+- **Hyprland's Lua can `io.open` and `dofile`.** That is what lets a theme ship
+  its own style table instead of the values being inline here. `hyprctl eval`
+  swallows return values, so probe it by writing to a file.
+- **A theme's `hypr.lua` must define every key.** It is read directly, not
+  merged over defaults, so a missing one lands in the compositor config as nil.
 - **More blur looks worse.** At `size 6 / passes 3` the backdrop behind a
   notification homogenises into flat colour, which reads as milky rather than
   glassy. Glass wants shapes softened but still recognisable.

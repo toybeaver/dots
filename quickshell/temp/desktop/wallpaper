@@ -1,0 +1,7 @@
+# Wallpaper for this theme, one "<output> <file>" per line.
+# See hxh-neon-glass/desktop/wallpaper for the format.
+#
+# Nothing in this theme is sampled from the image — it is white on black
+# regardless — so this is a free choice rather than a coupled one.
+eDP-1     snek-1-dark.png
+HDMI-A-1  snek-1-dark.png

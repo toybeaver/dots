@@ -1,4 +1,45 @@
 ------------------
+---- THEME ----
+------------------
+
+-- The active theme's Hyprland block: borders, corners, blur and shadows.
+--
+-- A theme is a whole Quickshell config directory under ~/.config/quickshell,
+-- and each one ships a desktop/hypr.lua returning the table below.
+-- bin/shell-theme points ~/.local/state/dots/active/hypr.lua at the current
+-- one and then runs `hyprctl reload`, which re-parses this file and picks the
+-- new values up. Nothing here names a theme.
+--
+-- The fallback matters: on a fresh checkout the symlink does not exist yet,
+-- because Hyprland parses this file BEFORE autostart runs shell-theme. Rather
+-- than error into a borderless, blurless desktop, fall back to the glass
+-- theme's values — the same ones that used to be inline here.
+local function theme_style()
+    local fallback = {
+        active_border   = { colors = { "rgba(931072ff)", "rgba(0c9797ee)" }, angle = 45 },
+        inactive_border = "rgba(3a3f4baa)",
+        border_size     = 2,
+        rounding        = 10,
+        rounding_power  = 2,
+        shadow = { enabled = true, range = 4, render_power = 3, color = 0xee1a1a1a },
+        blur = {
+            enabled = true, size = 4, passes = 2,
+            vibrancy = 0.1696, brightness = 0.90, contrast = 0.90,
+        },
+    }
+
+    local home = os.getenv("HOME")
+    if not home then return fallback end
+
+    local ok, style = pcall(dofile, home .. "/.local/state/dots/active/hypr.lua")
+    if ok and type(style) == "table" then return style end
+    return fallback
+end
+
+local style = theme_style()
+
+
+------------------
 ---- MONITORS ----
 ------------------
 
@@ -24,6 +65,8 @@ hl.monitor({
 -- Set programs that you use
 local terminal    = "ghostty"
 local fileManager = "nautilus"
+-- Appearance comes from ~/.config/rofi/config.rasi, which @theme-imports
+-- the active theme through a symlink. No theme is named here.
 local menu        = "rofi -show drun"
 
 
@@ -38,9 +81,13 @@ local menu        = "rofi -show drun"
 --
 hl.on("hyprland.start", function () 
   hl.exec_cmd("systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE")
-  hl.exec_cmd("mako")
-  hl.exec_cmd("quickshell -c snek")
-  hl.exec_cmd("swaybg -o eDP-1 -i /home/toyb/Pictures/wallpaper/gon.png -o HDMI-A-1 -i /home/toyb/Pictures/wallpaper/alucard.png")
+
+  -- One line, on purpose. swaybg, mako and the shell all look different per
+  -- theme, so shell-theme owns all three: it points the active-config symlinks,
+  -- sets the wallpaper, starts mako against the theme's config and launches the
+  -- shell. A theme switch runs the same code, so login and switching cannot
+  -- drift apart.
+  hl.exec_cmd("/home/toyb/.config/quickshell/bin/shell-theme start")
 end)
 
 
@@ -83,19 +130,14 @@ hl.config({
         gaps_in  = 5,
         gaps_out = 7,
 
-        border_size = 2,
+        border_size = style.border_size,
 
+        -- Border colours come from the active theme — see THEME at the top of
+        -- this file and <theme>/desktop/hypr.lua for the values and why they
+        -- are what they are.
         col = {
-            -- Sampled straight out of gon.png: its neon frame runs hot magenta
-            -- to electric cyan, so the gradient is the wallpaper's own colours
-            -- rather than an approximation.
-            --
-            -- Held at 60% of those values (#f61cbe / #15fcfd). At full strength
-            -- the border is genuinely neon and pulls the eye off the window
-            -- content it frames. Scale both stops together to re-tune —
-            -- 70% is #ac1385 / #0eb0b1, 55% is #870f68 / #0b8a8b.
-            active_border   = { colors = {"rgba(931072ff)", "rgba(0c9797ee)"}, angle = 45 },
-            inactive_border = "rgba(3a3f4baa)",
+            active_border   = style.active_border,
+            inactive_border = style.inactive_border,
         },
 
         -- Set to true to enable resizing windows by clicking and dragging on borders and gaps
@@ -108,46 +150,22 @@ hl.config({
     },
 
     decoration = {
-        rounding       = 10,
-        rounding_power = 2,
+        -- Themed: see THEME at the top of this file.
+        rounding       = style.rounding,
+        rounding_power = style.rounding_power,
 
         -- Change transparency of focused and unfocused windows
         active_opacity   = 1.0,
         inactive_opacity = 1.0,
 
-        shadow = {
-            enabled      = true,
-            range        = 4,
-            render_power = 3,
-            color        = 0xee1a1a1a,
-        },
+        shadow = style.shadow,
 
-        -- Tuned for the mako and rofi glass. Counterintuitively, more blur looks
-        -- worse: at size 6 / passes 3 the backdrop behind a notification was
-        -- homogenised into flat colour, which reads as "milky" rather than
-        -- glassy. Glass needs shapes softened but still recognisable.
-        --
-        -- These settings reach every surface with a blur layer rule, and the
-        -- post-processing below is not cosmetic to them — see the note where the
-        -- snek sidebar's rule used to be.
-        blur = {
-            enabled   = true,
-            size      = 4,
-            passes    = 2,
-            vibrancy  = 0.1696,
-
-            -- Darkens what the blur samples. Raising blur size does NOT help
-            -- legibility: blur softens detail but preserves average brightness,
-            -- so a blurred white page is still white. This is the knob that
-            -- mutes it.
-            --
-            -- Kept near 1.0 because mako and rofi now use a dark tint, which
-            -- handles legibility on its own. It was 0.60 back when they used a
-            -- light frost that fought the text; pulling it down now would just
-            -- crush the colour out of the blur for no benefit.
-            brightness = 0.90,
-            contrast   = 0.90,
-        },
+        -- Themed, and this is the setting most worth reading the theme file
+        -- for. It reaches every surface with a blur layer rule, and the
+        -- post-processing in it is not cosmetic — see the note where the
+        -- sidebar's blur rule used to be, and the tuning notes in
+        -- <theme>/desktop/hypr.lua. A flat theme turns this off entirely.
+        blur = style.blur,
     },
 
     animations = {
@@ -323,13 +341,14 @@ hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd("quickshell -c lock -n"))
 --
 -- Anything bound to SUPER+SHIFT+F23 by hand would collide with it.
 --
--- This goes through the snek shell's IPC handler rather than launching
+-- This goes through the running shell's IPC handler rather than launching
 -- anything: the control center lives inside the already running bar, so there
 -- is no process to start. It opens on whichever monitor has focus. If the bar
 -- is not running the call just fails and nothing happens.
 --
 -- It used to lock the session; MOD+Escape still does that.
-hl.bind(mainMod .. " + SHIFT + F23", hl.dsp.exec_cmd("quickshell -c snek ipc call control toggle"))
+hl.bind(mainMod .. " + SHIFT + F23", hl.dsp.exec_cmd(
+    "/home/toyb/.config/quickshell/bin/shell-theme ipc call control toggle"))
 
 -- Lid close locks the session.
 --
@@ -533,7 +552,7 @@ hl.window_rule({
 -- })
 -- overlayLayerRule:set_enabled(false)
 
--- The snek sidebar deliberately has NO blur rule.
+-- The sidebar deliberately has NO blur rule, in any theme.
 --
 -- It used to. Removing it fixed the pills rendering dark and speckled with green
 -- dots. Two causes, both from the blur:
@@ -548,7 +567,7 @@ hl.window_rule({
 --
 -- The sidebar loses nothing: it reserves an exclusive zone over a near-flat
 -- wallpaper, so there was never anything behind it worth blurring. Its glass is
--- drawn entirely by snek/shaders/glass.frag. Do not re-add a blur rule for it.
+-- drawn entirely by neon-glass/shaders/glass.frag. Do not re-add a blur rule.
 
 -- Frosted glass for mako notifications.
 -- No xray: notifications float over window content, and that content is exactly
@@ -586,9 +605,16 @@ hl.layer_rule({
 -- Unlike the sidebar, the panel's alpha does not oscillate near the threshold —
 -- its grain is 0.014 on top of a fill of ~0.75, nowhere near 0.70 — so there is
 -- no risk of the speckle that killed the sidebar's rule.
+-- Scoped to ONE theme, deliberately. Each theme namespaces its layers with its
+-- own name (see `sidebarLayer` / `controlLayer` in its consts/Theme.qml), so
+-- this matches hxh-neon-glass and nothing else. The flat `temp` theme has an opaque
+-- panel and wants no blur at all — it simply matches no rule.
+--
+-- A new theme that wants frosting needs its own copy of this block. That is the
+-- intended cost: blur tuning is part of a theme's material, not a global.
 hl.layer_rule({
-    name  = "snek-control-glass",
-    match = { namespace = "^snek-control$" },
+    name  = "hxh-neon-glass-control-glass",
+    match = { namespace = "^hxh-neon-glass-control$" },
 
     blur         = true,
     ignore_alpha = 0.70,

@@ -1,4 +1,5 @@
-// Session lock for the snek setup. Bound to Super+ESC.
+// Session lock for this setup. Bound to Super+ESC. Not themed — it is its own
+// config and does not change with the shell theme.
 //
 // Uses ext-session-lock-v1 via WlSessionLock, not a layer-shell overlay. That
 // distinction is the whole point: the compositor blanks every output itself and
