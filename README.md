@@ -66,7 +66,10 @@ sudo GREETER_BG=~/Pictures/wallpaper/gon.png ~/Source/dots/etc/greetd/install.sh
 
 The script **copies** rather than symlinks, for the same permission reason, and
 backs up whatever it replaces. **Re-run it after editing anything under
-`etc/greetd/`** — the repo is not live.
+`etc/greetd/`, and after switching themes** — the greeter is per theme and is
+baked in at install time, because the `greeter` user cannot read `/home` and so
+can never follow the active-theme symlink. `--theme NAME` installs a specific
+one.
 
 `/etc/greetd/environments` is deliberately *not* installed. It is the live list
 of sessions, maintained by hand; installing it from here would silently revert
@@ -108,7 +111,7 @@ matches any more.
 
 | Key | |
 | --- | --- |
-| `Super` + `Escape` | Lock |
+| `Super` + `Escape` | Lock, using the active theme's lock screen |
 | Copilot key | Control center — it emits `Shift+Super+F23`, so that chord is taken |
 | Lid close | Lock (logind still suspends afterwards) |
 | Power button | Press again within 3s to shut down |
@@ -124,9 +127,8 @@ the running bar. See
 The desktop is **themed**, and a theme is more than the shell: it carries its
 own wallpaper, mako config, rofi theme and Hyprland borders/blur/shadows, all
 under `quickshell/<theme>/desktop/`. The `< >` tile in the control center
-switches between them. `hxh-neon-glass` is the default, `neo-brutal` and
-`neo-brutal-dark` are a brutalist pair in flat blocks and hard ink, and `temp`
-is a flat white-on-black theme kept as a template. See
+switches between them. `hxh-neon-glass` is the default, and `neo-brutal` /
+`neo-brutal-dark` are a brutalist pair in flat blocks and hard ink. See
 [Themes](quickshell/README.md#themes).
 
 `quickshell/bin/shell-theme` owns every program whose appearance depends on the

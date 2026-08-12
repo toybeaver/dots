@@ -8,13 +8,12 @@ separate config, selected with `quickshell -c <dir>`.
 | `hxh-neon-glass/` | **Theme.** The default look — glass pills over a neon magenta/cyan rim |
 | `neo-brutal/` | **Theme.** Neo-brutalism — saturated blocks, black ink, hard offset shadows |
 | `neo-brutal-dark/` | **Theme.** The same, on black: deeper hues and hue-derived shadows |
-| `temp/` | **Theme.** Flat white on black, square, no shader and no blur |
 | `shared/` | Not a config. The non-visual half — watchers and state, symlinked into every theme |
 | `bin/` | Not a config. `shell-theme`, the launcher and switcher |
-| `lock/` | Session lock screen (`ext-session-lock-v1` + PAM) |
 | `simple/`, `example/` | Earlier experiments, not in use |
 
-A **theme** is a whole desktop, not a palette: the shell, the wallpaper, mako,
+Each theme also ships its own `lock/` and `greeter/`. A **theme** is a whole
+desktop, not a palette: the shell, the wallpaper, mako,
 rofi and Hyprland's borders and blur all change together. Switching replaces the
 running process — see [Themes](#themes).
 
@@ -32,7 +31,7 @@ theme — not the autostart line, not the keybind, not the QML.
 ```sh
 bin/shell-theme start          # bring the whole desktop up (this is the autostart)
 bin/shell-theme next | prev    # step through the list and switch into it
-bin/shell-theme set temp
+bin/shell-theme set neo-brutal
 bin/shell-theme apply          # re-apply the current theme without restarting the shell
 bin/shell-theme current
 bin/shell-theme ipc call theme next      # also: control toggle
@@ -57,6 +56,19 @@ A theme also carries the look of everything around the shell, under
 | `mako.conf` | mako runs with `--config` pointed at the active link; reloaded in place with `makoctl reload` |
 | `rofi.rasi` | `@theme`-imported by `.config/rofi/config.rasi`, which keeps the behaviour-only `configuration` block |
 | `wallpaper` | `<output> <file>` lines; swaybg is restarted, since it has no reload |
+
+Each theme also owns its **lock screen** (`<theme>/lock/shell.qml`) and its
+**login screen** (`<theme>/greeter/shell.qml`). Both are self-contained single
+files, deliberately: the greeter is copied into `/etc` and can import nothing
+from the repo, and keeping the lock the same shape means the two stay diffable
+against each other.
+
+`shell-theme lock` launches the active theme's locker, which is why nothing in
+`hyprland.lua` names one. The greeter cannot work that way — it runs as the
+`greeter` user, which cannot read `/home`, so it can never resolve the
+active-theme symlink. `etc/greetd/install.sh` bakes the selected theme's greeter
+into `/etc` instead, and **must be re-run after switching** if you want the
+login screen to follow.
 
 `bin/shell-theme` points `~/.local/state/dots/active/{hypr.lua,mako.conf,rofi.rasi}`
 at the current theme and drives all four. **Nothing outside that script names a
@@ -90,9 +102,8 @@ The seam between the two is one file per theme:
 | `consts/Theme.qml` | Identity (`name`, `label`), layer namespaces, and the palette |
 | `glass/GlassSurface.qml` (hxh-neon-glass) | The material. A translucent shader. |
 | `brutal/BrutalSurface.qml` (both neo-brutal) | The same API, a flat block with a hard offset shadow |
-| `surface/Surface.qml` (temp) | The same API, drawn as a flat rectangle |
 
-They all declare the same properties, so a component copies between themes
+Both declare the same properties, so a component copies between themes
 unchanged. What differs is which of them mean anything — each file says so at
 the top.
 
@@ -232,8 +243,9 @@ nothing at runtime.
 
 `hxh-neon-glass/glass/GlassSurface.qml` wraps it. Its defaults are the sidebar
 pill's values, so changing one there retunes every glass surface in that theme
-at once. `temp/surface/Surface.qml` is the flat theme's stand-in for it and
-declares the same properties, so components copy between themes unchanged.
+at once. `neo-brutal*/brutal/BrutalSurface.qml` is the brutalist stand-in for
+it and declares the same properties, so components copy between themes
+unchanged.
 
 ## The control center
 
@@ -247,7 +259,7 @@ modal panel.
 | Volume | Vertical slider on the default Pipewire sink, clamped to 100% |
 | Wifi | SSID plus local IPv4; click toggles the radio |
 | Mute / airplane | Toggles; airplane restores Bluetooth only if it was on beforehand |
-| Surface | hxh-neon-glass: dark fill at 0.80 plus a blur rule (`hxh-neon-glass-control-glass`) scoped to the panel with `ignore_alpha`. temp: opaque, no blur |
+| Surface | hxh-neon-glass: dark fill at 0.80 plus a blur rule (`hxh-neon-glass-control-glass`) scoped to the panel with `ignore_alpha`. neo-brutal: opaque, no blur |
 | Wifi list | Chevron on the wifi tile slides to a second page: connected network, refresh, and a scrollable list with inline password entry |
 | Theme | `< name >` under wifi. The arrows call `bin/shell-theme`, which replaces the whole process |
 

@@ -331,7 +331,8 @@ hl.bind(mainMod .. " + G", hl.dsp.layout("togglesplit"))    -- dwindle only
 --
 -- If the locker ever dies while locked, the session stays locked by design.
 -- Recover from a TTY (Ctrl+Alt+F2): loginctl unlock-session
-hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd("quickshell -c lock -n"))
+hl.bind(mainMod .. " + Escape",
+    hl.dsp.exec_cmd("/home/toyb/.config/quickshell/bin/shell-theme lock"))
 
 -- The Copilot key opens the control center.
 --
@@ -359,7 +360,8 @@ hl.bind(mainMod .. " + SHIFT + F23", hl.dsp.exec_cmd(
 -- This only adds the lock, so the machine locks and then sleeps, and comes back
 -- to the lock screen. Nothing sequences the two, but logind honours inhibitor
 -- delays before sleeping while the locker maps in well under a second.
-hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd("quickshell -c lock -n"), { locked = true })
+hl.bind("switch:on:Lid Switch",
+    hl.dsp.exec_cmd("/home/toyb/.config/quickshell/bin/shell-theme lock"), { locked = true })
 
 -- Power button asks before shutting down, same press-again pattern as
 -- mainMod+SHIFT+Q.

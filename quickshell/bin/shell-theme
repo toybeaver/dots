@@ -12,6 +12,7 @@
 #   shell-theme next | prev     step through THEMES and switch into it
 #   shell-theme set <name>      switch to a specific theme
 #   shell-theme apply           re-apply the current theme without restarting it
+#   shell-theme lock            lock the session with the active theme's locker
 #   shell-theme current         print the saved theme
 #   shell-theme list            print every theme, one per line
 #   shell-theme ipc ...         forward an IPC call to the running theme
@@ -26,7 +27,7 @@
 set -eu
 
 # Order matters: this is the order the control center's < and > buttons walk.
-THEMES="hxh-neon-glass neo-brutal neo-brutal-dark temp"
+THEMES="hxh-neon-glass neo-brutal neo-brutal-dark"
 DEFAULT_THEME="hxh-neon-glass"
 
 # Resolved from this script's own location so the themes are found whether it is
@@ -333,6 +334,17 @@ case "$cmd" in
       next) switch_to "$(step_theme 1)" ;;
       prev) switch_to "$(step_theme -1)" ;;
     esac
+    ;;
+
+  lock)
+    # The lock screen is per theme, so it is launched by path rather than by
+    # config name. -n (--no-duplicate) matters: a second locker while one is
+    # already holding the lock would fail, and this makes it a no-op instead.
+    #
+    # exec, so the caller's process IS the locker. Never background this: if the
+    # locker dies while the compositor still holds the lock, the session is
+    # stuck and only a TTY can recover it.
+    exec quickshell -p "$THEME_ROOT/$(current_theme)/lock/shell.qml" -n "$@"
     ;;
 
   current) current_theme ;;

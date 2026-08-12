@@ -6,7 +6,15 @@
 # resolve to something greeter cannot read and the greeter would fail to start.
 # Re-run this after editing anything here.
 #
-#   sudo ./install.sh
+#   sudo ./install.sh                 install the currently selected theme
+#   sudo ./install.sh --theme NAME    install a specific theme's greeter
+#
+# The greeter is PER THEME, and it is baked in here rather than followed live:
+# the greeter runs as the `greeter` user and cannot read /home, so it can never
+# resolve the active-theme symlink the rest of the desktop uses. Whatever theme
+# is selected when you run this is the one the login screen keeps.
+#
+# RE-RUN THIS AFTER SWITCHING THEMES if you want the login screen to follow.
 #
 # Every replaced file is backed up to /etc/greetd/backup-<timestamp>/.
 
@@ -19,6 +27,30 @@ fi
 
 src="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 dst=/etc/greetd
+repo="$(cd "$src/../.." && pwd)"
+
+# Which theme's greeter to install.
+#
+# Read from the invoking user's state, not root's — this runs under sudo, so
+# $HOME is /root and the selection would never be found. SUDO_USER is the
+# reliable handle on whose desktop this actually is.
+theme=""
+if [ "${1:-}" = "--theme" ]; then
+    theme="${2:-}"
+    [ -n "$theme" ] || { echo "error: --theme needs a name" >&2; exit 1; }
+else
+    user_home=$(getent passwd "${SUDO_USER:-$(id -un)}" | cut -d: -f6)
+    state="$user_home/.local/state/dots/theme"
+    [ -r "$state" ] && theme=$(cat "$state" 2>/dev/null || true)
+fi
+
+# Fall back rather than fail. A greeter that will not install is a machine you
+# cannot log into graphically.
+if [ -z "$theme" ] || [ ! -f "$repo/quickshell/$theme/greeter/shell.qml" ]; then
+    echo "warning: no greeter for theme \"${theme:-<unset>}\", falling back to hxh-neon-glass" >&2
+    theme=hxh-neon-glass
+fi
+echo "installing greeter for theme: $theme"
 backup="$dst/backup-$(date +%Y%m%d-%H%M%S)"
 
 # environments is deliberately NOT installed. It is the live list of sessions,
@@ -42,8 +74,9 @@ for f in "${files[@]}"; do
 done
 
 install -d -m 0755 -o root -g root "$dst/quickshell"
-install -m 0644 -o root -g root "$src/quickshell/shell.qml" "$dst/quickshell/shell.qml"
-echo "installed $dst/quickshell/shell.qml"
+install -m 0644 -o root -g root \
+    "$repo/quickshell/$theme/greeter/shell.qml" "$dst/quickshell/shell.qml"
+echo "installed $dst/quickshell/shell.qml (theme: $theme)"
 
 # Optional wallpaper. The greeter cannot read /home, so an image has to live
 # somewhere world readable; shell.qml picks it up automatically if present.
