@@ -17,6 +17,8 @@ SidebarPill {
   implicitHeight: 40
   Layout.bottomMargin: 10
 
+  pressed: mouse.pressed
+
   readonly property bool open: ControlCenterState.open
     && ControlCenterState.screen === root.targetScreen
 

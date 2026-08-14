@@ -27,6 +27,8 @@ SidebarPill {
   implicitHeight: 40
   Layout.topMargin: 10
 
+  pressed: hit.pressed
+
   // The bar's ColumnLayout contributes 5px of spacing on its own, which is not
   // enough of a gap between a button and the workspace dots below it — they
   // read as one group. Every other pill in the bar sets 10 for the same reason.
@@ -113,6 +115,10 @@ SidebarPill {
   }
 
   MouseArea {
+    // `hit`, not `mouse`: the click handler below takes a parameter of that
+    // name, and an id it shadows is a trap for the next reader.
+    id: hit
+
     anchors.fill: parent
     acceptedButtons: Qt.LeftButton | Qt.RightButton
     cursorShape: Qt.PointingHandCursor

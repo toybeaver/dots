@@ -18,6 +18,8 @@ SidebarPill {
   implicitHeight: 110
   Layout.bottomMargin: 10
 
+  pressed: hit.pressed
+
   readonly property bool open: CalendarState.open
     && CalendarState.screen === root.targetScreen
 
@@ -60,6 +62,8 @@ SidebarPill {
   }
 
   MouseArea {
+    id: hit
+
     anchors.fill: parent
     cursorShape: Qt.PointingHandCursor
     onClicked: CalendarState.toggle(root.targetScreen)

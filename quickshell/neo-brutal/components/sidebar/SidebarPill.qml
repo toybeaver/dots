@@ -30,9 +30,22 @@ Item {
   // are already a strong enough shape that a pill around them just adds noise.
   property bool filled: true
 
+  // Held. Only the three pills that take clicks ever set this; the readings
+  // leave it false, so nothing in the bar moves unless it is a button being
+  // pressed.
+  property bool pressed: false
+
+  // Numerals and icons move with the block — see THE CONTRACT in BrutalSurface.
+  // A no-op for the pills that never set `pressed`, since `shift` stays 0.
+  transform: Translate { x: surface.shift; y: surface.shift }
+
   BrutalSurface {
+    id: surface
+
     anchors.fill: parent
     visible: pill.filled
+
+    pressed: pill.pressed
 
     // LIGHT twin: hue in the block, outline is ink.
     base: pill.accent
