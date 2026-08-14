@@ -98,7 +98,12 @@ Item {
         Layout.preferredWidth: panel.headerH
         Layout.fillHeight: true
 
+        // Icon moves with the block — see THE CONTRACT in BrutalSurface.
+        transform: Translate { x: dndBlock.shift; y: dndBlock.shift }
+
         BrutalSurface {
+          id: dndBlock
+
           anchors.fill: parent
           base: NotificationWatcher.silent ? Theme.get_color("acc_orange")
                                            : Theme.get_color("neutral")
@@ -107,7 +112,7 @@ Item {
             ? Theme.get_color("acc_orange") : Theme.get_color("neutral"), 2.2)
           borderWidth: ControlMetrics.px(2)
           offset: ControlMetrics.px(3)
-          pressed: dndHit.containsMouse
+          pressed: dndHit.pressed
         }
 
         TileIcon {
@@ -135,14 +140,19 @@ Item {
         // hidden, so the header does not reflow the moment the list empties.
         opacity: NotificationWatcher.count > 0 ? 1.0 : 0.35
 
+        // Label moves with the block — see THE CONTRACT in BrutalSurface.
+        transform: Translate { x: clearBlock.shift; y: clearBlock.shift }
+
         BrutalSurface {
+          id: clearBlock
+
           anchors.fill: parent
           base: Theme.get_color("neutral")
           edge: Theme.get_color("edge")
           shadowColor: Qt.darker(Theme.get_color("neutral"), 2.2)
           borderWidth: ControlMetrics.px(2)
           offset: ControlMetrics.px(3)
-          pressed: clearHit.containsMouse && NotificationWatcher.count > 0
+          pressed: clearHit.pressed && NotificationWatcher.count > 0
         }
 
         Text {

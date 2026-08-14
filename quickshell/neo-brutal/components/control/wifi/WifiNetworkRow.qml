@@ -54,7 +54,12 @@ Item {
     row.expanded = false;
   }
 
+  // Content moves with the block — see THE CONTRACT in BrutalSurface.
+  transform: Translate { x: surface.shift; y: surface.shift }
+
   BrutalSurface {
+    id: surface
+
     anchors.fill: parent
 
     // State recolours the row outright — the same idiom as every other
@@ -66,7 +71,7 @@ Item {
 
     borderWidth: ControlMetrics.px(2)
     offset: ControlMetrics.px(4)
-    pressed: hover.containsMouse && row.actionable
+    pressed: hover.pressed && row.actionable
   }
 
 

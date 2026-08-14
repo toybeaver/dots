@@ -77,17 +77,22 @@ Item {
         Layout.fillWidth: true
         Layout.fillHeight: true
 
+        // Label moves with the block — see THE CONTRACT in BrutalSurface.
+        transform: Translate { x: titleBlock.shift; y: titleBlock.shift }
+
         CalendarBlock {
+          id: titleBlock
+
           anchors.fill: parent
 
           // Yellow, matching the date pill this popup hangs off — the header is
           // the part that says which pill opened it.
           accent: Theme.get_color("acc_yellow")
 
-          // Presses into its own shadow on hover, but only while there is
+          // Presses into its own shadow while held, but only while there is
           // somewhere to go back to. A control that animates and then does
           // nothing is worse than one that does not animate.
-          pressed: home.containsMouse && !CalendarState.onToday
+          pressed: home.pressed && !CalendarState.onToday
         }
 
         Text {

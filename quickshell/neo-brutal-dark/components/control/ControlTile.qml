@@ -30,12 +30,27 @@ Item {
 
   readonly property bool hovered: mouse.containsMouse
 
+  // HELD, not hovered. Hover used to drive the displacement, and it read as the
+  // tile coming apart: the block slid away while the icon stayed put. Movement
+  // now means an actual press.
+  //
+  // MouseArea.pressed rather than containsPress, deliberately. A held tile moves
+  // down-right by `offset`, so a press near its top-left edge can leave the
+  // cursor outside the tile — containsPress would then flicker off and on as the
+  // geometry chased the pointer.
+  readonly property bool held: mouse.pressed
+
   signal clicked
 
   Layout.preferredWidth: ControlMetrics.px(72)
   Layout.preferredHeight: ControlMetrics.px(72)
 
+  // Content moves with the block — see THE CONTRACT in BrutalSurface.
+  transform: Translate { x: surface.shift; y: surface.shift }
+
   BrutalSurface {
+    id: surface
+
     anchors.fill: parent
 
     // The hue is the BLOCK, as in the light twin. An earlier version put it on
@@ -51,9 +66,9 @@ Item {
     // either — that is what made it merge with the border.
     shadowColor: Qt.darker(tile.accent, 2.2)
 
-    // Hover presses the block into its own shadow. No fade, no glow — the one
-    // interaction this style permits is displacement.
-    pressed: tile.hovered && tile.interactive
+    // A press pushes the block into its own shadow. No fade, no glow — the
+    // one interaction this style permits is displacement.
+    pressed: tile.held && tile.interactive
   }
 
   MouseArea {
