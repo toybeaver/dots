@@ -36,4 +36,4 @@ PROMPT_COMMAND='PS1_GIT=$(_ps1_get_git_branch);PS1_GIT_STATUS=$(_ps1_git_has_cha
 PS1="\n$CGREEN\W$CRESET$CYELLOW\${PS1_GIT}\${PS1_GIT_STATUS}$CSGREEN \\$ $CRESET";
 
 
-which mise 2> /dev/null && eval "$(mise activate bash)"
+which mise 2> /dev/null > /dev/null && eval "$(mise activate bash)"
