@@ -1,1 +1,16 @@
 theme = "amberwood"
+
+[editor]
+mouse = false
+insert-final-newline = false
+
+[editor.statusline]
+left = ["spinner", "spacer", "version-control"]
+center = ["file-name", "read-only-indicator"]
+right = ["position", "spacer", "total-line-numbers"]
+separator = "│"
+
+[editor.cursor-shape]
+normal = "block"
+insert = "bar"
+select = "underline"
