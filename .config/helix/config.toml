@@ -5,7 +5,7 @@ mouse = false
 insert-final-newline = false
 
 [editor.statusline]
-left = ["spinner", "spacer", "version-control"]
+left = ["spinner", "spacer", "version-control", "file-modification-indicator"]
 center = ["file-name", "read-only-indicator"]
 right = ["position", "spacer", "total-line-numbers"]
 separator = "│"
